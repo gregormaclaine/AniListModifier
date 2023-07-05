@@ -1,0 +1,17 @@
+{
+  "name": "Anilist Modifier",
+  "description": "Add scores to Anilist activity feed",
+  "version": "1.0.1",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["https://anilist.co/home"],
+      "js": ["injection.js"],
+      "css": []
+    }
+  ],
+  "icons": { "32": "icons/32.png", "256": "icons/256.png" },
+  "background": {
+    "service_worker": "background.js"
+  }
+}

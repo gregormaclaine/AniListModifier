@@ -1,3 +1,31 @@
+async function local_api_call(feed_items) {
+  try {
+    const res = await fetch('http://localhost:3000/get_scores_for_feed', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(feed_items)
+    });
+    return await res.json();
+  } catch (e) {
+    console.error("Couldn't connect to server");
+    console.error(e);
+    return [];
+  }
+}
+
+async function background_api_call(feed_items) {
+  try {
+    return await chrome.runtime.sendMessage('', {
+      action: 'fetch-scores',
+      feed_items
+    });
+  } catch (e) {
+    console.error("Couldn't connect to server");
+    console.error(e);
+    return [];
+  }
+}
+
 const update_feed_items = feed_items => {
   feed_items = feed_items
     .filter(f => {
@@ -18,32 +46,29 @@ const update_feed_items = feed_items => {
       ),
       status_el: f.querySelector('.status')
     }));
+
   if (!feed_items.length) return;
   console.log('Updating', feed_items.length, 'feed items...');
-  fetch('http://localhost:3000/get_scores_for_feed', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(feed_items)
-  })
-    .then(res => res.json())
-    .then(scores =>
-      scores.forEach(({ user, id, score }) => {
-        const status_el = feed_items.find(
-          fi => fi.user === user && fi.id === id
-        ).status_el;
 
-        if (score) {
-          status_el.innerHTML += ` and rated it a${
-            score >= 8 && score < 9 ? 'n' : ''
-          } <b>${score}</b>.`;
-        } else {
-          status_el.innerHTML += ` without rating it.`;
-        }
-      })
-    );
+  background_api_call(feed_items).then(scores =>
+    scores.forEach(({ user, id, score }) => {
+      const status_el = feed_items.find(
+        fi => fi.user === user && fi.id === id
+      ).status_el;
+
+      if (score) {
+        status_el.innerHTML += ` and rated it a${
+          score >= 8 && score < 9 ? 'n' : ''
+        } <b>${score}</b>.`;
+      } else {
+        status_el.innerHTML += ` without rating it.`;
+      }
+    })
+  );
 };
 
 (() => {
+  console.log('Loading Anilist Modifier Extension...');
   update_feed_items([...document.querySelector('.activity-feed').children]);
 
   const observer = new MutationObserver(mutationsList => {

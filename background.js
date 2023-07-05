@@ -6,15 +6,15 @@ const sendgql = async (username, mediaIds) => {
     body: JSON.stringify({
       variables: { username, mediaIds },
       query: `
-        query GetMediaScore($username: String, $mediaIds: [Int]) {
-          Page(page: 1) {
-            mediaList(userName: $username, status_in: [COMPLETED, DROPPED], mediaId_in: $mediaIds) {
-              score
-              media { id }
+          query GetMediaScore($username: String, $mediaIds: [Int]) {
+            Page(page: 1) {
+              mediaList(userName: $username, status_in: [COMPLETED, DROPPED], mediaId_in: $mediaIds) {
+                score
+                media { id }
+              }
             }
           }
-        }
-      `
+        `
     })
   });
 
@@ -55,21 +55,14 @@ const gather_info = async feed_items => {
   return all_data.flat();
 };
 
-if (module === require.main) {
-  gather_info([
-    {
-      user: 'KAPPAMAC',
-      id: '128893'
-    }
-    // {
-    //   user: 'JezzaCh',
-    //   id: '150672'
-    // },
-    // {
-    //   user: 'KAPPAMAC',
-    //   id: '131518'
-    // },
-  ]).then(console.log);
-} else {
-  module.exports = gather_info;
-}
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  switch (request.action) {
+    case 'fetch-scores':
+      gather_info(request.feed_items).then(result_data =>
+        sendResponse(result_data)
+      );
+      return true;
+    default:
+      return;
+  }
+});
