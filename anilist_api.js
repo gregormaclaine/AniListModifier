@@ -18,6 +18,9 @@ const sendgql = async (username, mediaIds) => {
     })
   });
 
+  // const total = parseInt(res.headers.get('x-ratelimit-limit'));
+  // const remaining = parseInt(res.headers.get('x-ratelimit-remaining'));
+
   const { data, errors } = await res.json();
 
   if (errors) {
@@ -32,6 +35,8 @@ const sendgql = async (username, mediaIds) => {
 };
 
 const gather_info = async feed_items => {
+  feed_items = feed_items.filter(f => f);
+
   const usernames = [];
   for (const { user } of feed_items) {
     if (!usernames.includes(user)) usernames.push(user);
@@ -50,27 +55,21 @@ const gather_info = async feed_items => {
   return all_data.flat();
 };
 
-// gather_info([
-//   {
-//     user: 'KAPPAMAC',
-//     id: '128893'
-//   },
-//   {
-//     user: 'JezzaCh',
-//     id: '150672'
-//   },
-//   {
-//     user: 'KAPPAMAC',
-//     id: '131518'
-//   },
-//   {
-//     user: 'KAPPAMAC',
-//     id: '155783'
-//   },
-//   {
-//     user: 'SimbaNinja',
-//     id: '2904'
-//   }
-// ]).then(console.log);
-
-module.exports = gather_info;
+if (module === require.main) {
+  gather_info([
+    {
+      user: 'KAPPAMAC',
+      id: '128893'
+    }
+    // {
+    //   user: 'JezzaCh',
+    //   id: '150672'
+    // },
+    // {
+    //   user: 'KAPPAMAC',
+    //   id: '131518'
+    // },
+  ]).then(console.log);
+} else {
+  module.exports = gather_info;
+}
