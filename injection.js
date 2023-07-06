@@ -1,16 +1,9 @@
-async function local_api_call(feed_items) {
-  try {
-    const res = await fetch('http://localhost:3000/get_scores_for_feed', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify(feed_items)
-    });
-    return await res.json();
-  } catch (e) {
-    console.error("Couldn't connect to server");
-    console.error(e);
-    return [];
-  }
+function styled_log(...texts) {
+  console.log(
+    '%cAniList Modifier%c ' + texts.join(' '),
+    'background-color: #DD4124; border-radius: 5px; padding: 0.2em 0.3em; color: white; font-family: Verdana;',
+    ''
+  );
 }
 
 async function background_api_call(feed_items) {
@@ -20,7 +13,7 @@ async function background_api_call(feed_items) {
       feed_items
     });
   } catch (e) {
-    console.error("Couldn't connect to server");
+    styled_log("Couldn't connect to server");
     console.error(e);
     return [];
   }
@@ -48,27 +41,32 @@ const update_feed_items = feed_items => {
     }));
 
   if (!feed_items.length) return;
-  console.log('Updating', feed_items.length, 'feed items...');
 
-  background_api_call(feed_items).then(scores =>
-    scores.forEach(({ user, id, score }) => {
-      const status_el = feed_items.find(
-        fi => fi.user === user && fi.id === id
-      ).status_el;
+  background_api_call(feed_items).then(
+    ({ scores, api_calls_left, api_calls_total }) => {
+      styled_log(
+        `Updating ${feed_items.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
+      );
 
-      if (score) {
-        status_el.innerHTML += ` and rated it a${
-          score >= 8 && score < 9 ? 'n' : ''
-        } <b>${score}</b>.`;
-      } else {
-        status_el.innerHTML += ` without rating it.`;
-      }
-    })
+      scores.forEach(({ user, id, score }) => {
+        const status_el = feed_items.find(
+          fi => fi.user === user && fi.id === id
+        ).status_el;
+
+        if (score) {
+          status_el.innerHTML += ` and rated it a${
+            score >= 8 && score < 9 ? 'n' : ''
+          } <b>${score}</b>.`;
+        } else {
+          status_el.innerHTML += ` without rating it.`;
+        }
+      });
+    }
   );
 };
 
 (() => {
-  console.log('Loading Anilist Modifier Extension...');
+  styled_log('Loading Extension...');
   update_feed_items([...document.querySelector('.activity-feed').children]);
 
   const observer = new MutationObserver(mutationsList => {
