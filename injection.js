@@ -54,39 +54,84 @@
             fi => fi.user === user && fi.id === id
           ).status_el;
 
+          const mod = document.createElement('span');
+          mod.classList.add('score-info');
+
           if (score) {
-            status_el.innerHTML += ` and rated it a${
+            mod.innerHTML += ` and rated it a${
               score >= 8 && score < 9 ? 'n' : ''
             } <b>${score}</b>.`;
           } else {
-            status_el.innerHTML += ` without rating it.`;
+            mod.innerHTML += ` without rating it.`;
           }
+          status_el.appendChild(mod);
         });
       }
     );
+  }
+
+  function should_node_be_modded(node) {
+    if (!node.classList) return false;
+
+    if (
+      !node.classList.contains('activity-anime_list') &&
+      !node.classList.contains('activity-manga_list')
+    )
+      return false;
+
+    return !node.querySelector('.status > span.score-info');
+  }
+
+  function get_top_feed_item_hash() {
+    const el = document.querySelector('.activity-feed').children[0];
+    if (!el) return '';
+
+    return (
+      el.querySelector('a.cover').href +
+      ' ' +
+      el.querySelector('a.name').innerText +
+      ' ' +
+      el.querySelector('div.status').innerText
+    );
+  }
+
+  function reset_modifications() {
+    [...document.querySelectorAll('.activity-feed span.score-info')].forEach(
+      el => el.remove()
+    );
+    update_feed_items([...document.querySelector('.activity-feed').children]);
   }
 
   function main() {
     styled_log('Loading Extension...');
     update_feed_items([...document.querySelector('.activity-feed').children]);
 
-    const observer = new MutationObserver(mutationsList => {
-      const new_feed_items = [];
+    let previous_top_item_hash = get_top_feed_item_hash();
 
-      for (const mutation of mutationsList) {
-        if (mutation.type == 'childList') {
-          new_feed_items.push(
-            ...[...mutation.addedNodes].filter(
-              new_node =>
-                new_node.classList &&
-                (new_node.classList.contains('activity-anime_list') ||
-                  new_node.classList.contains('activity-manga_list'))
-            )
-          );
+    const observer = new MutationObserver(mutationsList => {
+      // When the feed does an auto update, it does not add a new element to
+      // the div, instead it just updates all the inner div attributes, however since
+      // the status texts have been updated, some are fixed incorrectly.
+      // Therefore to fix this, check if the top most feed item has changed.
+      const new_hash = get_top_feed_item_hash();
+
+      if (previous_top_item_hash === new_hash) {
+        const new_feed_items = [];
+
+        for (const mutation of mutationsList) {
+          if (mutation.type === 'childList') {
+            new_feed_items.push(
+              ...[...mutation.addedNodes].filter(should_node_be_modded)
+            );
+          }
         }
+
+        if (new_feed_items.length) update_feed_items(new_feed_items);
+      } else {
+        reset_modifications();
       }
 
-      if (new_feed_items.length) update_feed_items(new_feed_items);
+      previous_top_item_hash = new_hash;
     });
 
     observer.observe(document.querySelector('.activity-feed'), {
