@@ -1,7 +1,7 @@
 {
   "name": "Anilist Modifier",
   "description": "Add scores to Anilist activity feed",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "manifest_version": 3,
   "content_scripts": [
     {
