@@ -31,7 +31,7 @@
         );
       })
       .map(f => ({
-        user: f.querySelector('.name').innerText,
+        user: f.querySelector('.name').innerText.trim(),
         id: parseInt(
           f
             .querySelector('a.cover')
@@ -89,7 +89,7 @@
     return (
       el.querySelector('a.cover').href +
       ' ' +
-      el.querySelector('a.name').innerText +
+      el.querySelector('a.name').innerText.trim() +
       ' ' +
       el.querySelector('div.status').innerText
     );
@@ -102,13 +102,18 @@
     update_feed_items([...document.querySelector('.activity-feed').children]);
   }
 
+  let observer;
+
   function main() {
-    styled_log('Loading Extension...');
+    if (!document.querySelector('.activity-feed')) return false;
+
+    if (observer) observer.disconnect();
+
     update_feed_items([...document.querySelector('.activity-feed').children]);
 
     let previous_top_item_hash = get_top_feed_item_hash();
 
-    const observer = new MutationObserver(mutationsList => {
+    observer = new MutationObserver(mutationsList => {
       // When the feed does an auto update, it does not add a new element to
       // the div, instead it just updates all the inner div attributes, however since
       // the status texts have been updated, some are fixed incorrectly.
@@ -139,7 +144,25 @@
       childList: true,
       subtree: true
     });
+
+    return true;
   }
 
-  main();
+  function main_until_success(delay = 100, max_tries = 5) {
+    styled_log('Loading extension...');
+    let tries = 0;
+
+    const func = () => {
+      tries++;
+      const result = main({ try: tries });
+      if (result)
+        return styled_log(`Successfully loaded extension (Attempt ${tries})`);
+      if (tries < max_tries) return setTimeout(func, delay);
+      styled_log(`Failed to load extension (Failed Attempts: ${tries})`);
+    };
+
+    func();
+  }
+
+  window.addEventListener('load', () => main_until_success());
 })();
