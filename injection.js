@@ -55,14 +55,23 @@
     }));
   }
 
+  /**
+   * Returns whether you should use 'a' or 'an' etc.
+   * @param {number} score
+   */
+  function get_score_article(score) {
+    if (score >= 8 && score < 9) return 'an';
+    if (score >= 80 && score < 90) return 'an';
+    return 'a';
+  }
+
   function update_status_with_score(status_el, score) {
     const mod = document.createElement('span');
     mod.classList.add('score-info');
 
     if (score) {
-      mod.innerHTML += ` and rated it a${
-        score >= 8 && score < 9 ? 'n' : ''
-      } <b>${score}</b>.`;
+      const article = get_score_article(score);
+      mod.innerHTML += ` and rated it ${article} <b>${score}</b>.`;
     } else {
       mod.innerHTML += ` without rating it.`;
     }
