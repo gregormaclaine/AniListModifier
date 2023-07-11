@@ -78,7 +78,7 @@
     status_el.appendChild(mod);
 
     if (!score) {
-      mod.innerHTML += ` without rating it.`;
+      mod.innerHTML += ` without rating it`;
       return;
     }
 
@@ -86,10 +86,10 @@
     switch (score_format) {
       case 'POINT_10':
       case 'POINT_10_DECIMAL':
-        mod.innerHTML += ` and rated it ${article} <b>${score}</b>.`;
+        mod.innerHTML += ` and rated it ${article} <b>${score}</b>`;
         return;
       case 'POINT_100':
-        mod.innerHTML += ` and rated it ${article} <b>${score}/100</b>.`;
+        mod.innerHTML += ` and rated it ${article} <b>${score}/100</b>`;
         return;
       case 'POINT_5':
         mod.innerHTML += ` and gave it ${score} ` + STAR_SVG;
