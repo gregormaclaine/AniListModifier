@@ -21,6 +21,10 @@
     );
   }
 
+  function is_error_invalid_extension(e) {
+    return e.message === 'Extension context invalidated.';
+  }
+
   async function background_api_call(feed_items) {
     try {
       return await chrome.runtime.sendMessage('', {
@@ -28,9 +32,16 @@
         feed_items
       });
     } catch (e) {
-      styled_log("Couldn't connect to server");
-      console.error(e);
-      return [];
+      if (is_error_invalid_extension(e)) {
+        // Error was caused by the tab and the background script being
+        // out of sync. This happens when the extension is reloaded while
+        // the current tab is still running a previous load's injection script.
+        styled_log('Extension out of sync: consider reloading to fix issue');
+      } else {
+        styled_log("Couldn't connect to server");
+        console.error(e);
+      }
+      return { scores: [], api_calls_left: 0, api_calls_total: 0 };
     }
   }
 
@@ -109,15 +120,15 @@
   async function update_feed_items(feed_item_els) {
     feed_item_els = get_scorable_feed_items(feed_item_els);
     const feed_items = parse_feed_items(feed_item_els);
-    console.log(feed_item_els);
 
     if (!feed_items.length) return;
 
     const { scores, api_calls_left, api_calls_total } =
       await background_api_call(feed_items);
+    if (!scores.length) return;
 
     styled_log(
-      `Updating ${feed_items.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
+      `Updating ${scores.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
     );
 
     scores.forEach(({ user, id, score, score_format }) => {
@@ -231,7 +242,7 @@
       tries++;
       const result = await main({ try: tries });
       if (result)
-        return styled_log(`Successfully loaded extension (Attempt ${tries})`);
+        return styled_log(`Successfully attached extension (Attempt ${tries})`);
       if (tries < max_tries) return setTimeout(func, delay);
       styled_log(`Failed to load extension (Failed Attempts: ${tries})`);
     };
