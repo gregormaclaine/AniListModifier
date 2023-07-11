@@ -20,9 +20,20 @@
     }
   }
 
-  function update_feed_items(feed_items) {
+  function is_feed_item(feed_item) {
+    return (
+      feed_item.classList &&
+      feed_item.classList.contains('activity-entry') &&
+      (feed_item.classList.contains('activity-manga_list') ||
+        feed_item.classList.contains('activity-anime_list'))
+    );
+  }
+
+  async function update_feed_items(feed_items) {
     feed_items = feed_items
       .filter(f => {
+        if (!is_feed_item(f)) return false;
+
         const status_text = f.querySelector('.status').innerText;
         return (
           status_text.startsWith('Completed') ||
@@ -43,31 +54,30 @@
 
     if (!feed_items.length) return;
 
-    background_api_call(feed_items).then(
-      ({ scores, api_calls_left, api_calls_total }) => {
-        styled_log(
-          `Updating ${feed_items.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
-        );
+    const { scores, api_calls_left, api_calls_total } =
+      await background_api_call(feed_items);
 
-        scores.forEach(({ user, id, score }) => {
-          const status_el = feed_items.find(
-            fi => fi.user === user && fi.id === id
-          ).status_el;
-
-          const mod = document.createElement('span');
-          mod.classList.add('score-info');
-
-          if (score) {
-            mod.innerHTML += ` and rated it a${
-              score >= 8 && score < 9 ? 'n' : ''
-            } <b>${score}</b>.`;
-          } else {
-            mod.innerHTML += ` without rating it.`;
-          }
-          status_el.appendChild(mod);
-        });
-      }
+    styled_log(
+      `Updating ${feed_items.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
     );
+
+    scores.forEach(({ user, id, score }) => {
+      const status_el = feed_items.find(
+        fi => fi.user === user && fi.id === id
+      ).status_el;
+
+      const mod = document.createElement('span');
+      mod.classList.add('score-info');
+
+      if (score) {
+        mod.innerHTML += ` and rated it a${
+          score >= 8 && score < 9 ? 'n' : ''
+        } <b>${score}</b>.`;
+      } else {
+        mod.innerHTML += ` without rating it.`;
+      }
+      status_el.appendChild(mod);
+    });
   }
 
   function should_node_be_modded(node) {
@@ -99,17 +109,31 @@
     [...document.querySelectorAll('.activity-feed span.score-info')].forEach(
       el => el.remove()
     );
-    update_feed_items([...document.querySelector('.activity-feed').children]);
+    main_until_success();
+  }
+
+  function listen_for_url_change(callback, interval = 100) {
+    let current_url = window.location.href;
+    setInterval(() => {
+      const new_url = window.location.href;
+      if (current_url !== new_url) {
+        styled_log('Navigated to ' + new_url);
+        current_url = new_url;
+        callback();
+      }
+    }, interval);
   }
 
   let observer;
 
-  function main() {
+  async function main() {
     if (!document.querySelector('.activity-feed')) return false;
 
     if (observer) observer.disconnect();
 
-    update_feed_items([...document.querySelector('.activity-feed').children]);
+    await update_feed_items([
+      ...document.querySelector('.activity-feed').children
+    ]);
 
     let previous_top_item_hash = get_top_feed_item_hash();
 
@@ -131,12 +155,14 @@
           }
         }
 
-        if (new_feed_items.length) update_feed_items(new_feed_items);
+        if (new_feed_items.length)
+          update_feed_items(new_feed_items).then(
+            () => (previous_top_item_hash = get_top_feed_item_hash())
+          );
       } else {
+        observer.disconnect();
         reset_modifications();
       }
-
-      previous_top_item_hash = new_hash;
     });
 
     observer.observe(document.querySelector('.activity-feed'), {
@@ -152,9 +178,9 @@
     styled_log('Loading extension...');
     let tries = 0;
 
-    const func = () => {
+    const func = async () => {
       tries++;
-      const result = main({ try: tries });
+      const result = await main({ try: tries });
       if (result)
         return styled_log(`Successfully loaded extension (Attempt ${tries})`);
       if (tries < max_tries) return setTimeout(func, delay);
@@ -164,5 +190,6 @@
     func();
   }
 
+  listen_for_url_change(main_until_success);
   window.addEventListener('load', () => main_until_success());
 })();
