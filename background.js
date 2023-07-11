@@ -8,9 +8,12 @@ const sendgql = async (username, mediaIds) => {
       query: `
           query GetMediaScore($username: String, $mediaIds: [Int]) {
             Page(page: 1) {
-              mediaList(userName: $username, status_in: [COMPLETED, DROPPED], mediaId_in: $mediaIds) {
+              mediaList(userName: $username, mediaId_in: $mediaIds) {
                 score
                 media { id }
+                user {
+                  mediaListOptions { scoreFormat }
+                }
               }
             }
           }
@@ -21,7 +24,7 @@ const sendgql = async (username, mediaIds) => {
   const { data, errors } = await res.json();
 
   if (errors) {
-    if (errors[0].status === 404) return null;
+    if (errors[0].status === 404) return { data: [] };
     throw new Error(errors[0].message);
   }
 
@@ -30,6 +33,7 @@ const sendgql = async (username, mediaIds) => {
       id: item.media.id,
       score: item.score
     })),
+    score_format: data.Page.mediaList[0]?.user.mediaListOptions.scoreFormat,
     api_calls_left: parseInt(res.headers.get('x-ratelimit-remaining')),
     api_calls_total: parseInt(res.headers.get('x-ratelimit-limit'))
   };
@@ -50,6 +54,7 @@ const gather_info = async feed_items => {
     usernames.map(async username => {
       const {
         data,
+        score_format,
         api_calls_left: acl,
         api_calls_total: act
       } = await sendgql(
@@ -57,10 +62,10 @@ const gather_info = async feed_items => {
         feed_items.filter(f => f.user === username).map(f => f.id)
       );
 
-      api_calls_left = Math.min(api_calls_left, acl);
-      api_calls_total = act;
+      if (acl) api_calls_left = Math.min(api_calls_left, acl);
+      if (act) api_calls_total = act;
 
-      return data.map(r => ({ user: username, ...r }));
+      return data.map(r => ({ user: username, score_format, ...r }));
     })
   );
 

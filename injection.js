@@ -1,4 +1,12 @@
 (() => {
+  const FACE_SVGS = {
+    1: `<svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="frown" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg-inline--fa fa-frown fa-w-16 fa-lg"><path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200zm-80-216c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm160-64c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-80 128c-40.2 0-78 17.7-103.8 48.6-8.5 10.2-7.1 25.3 3.1 33.8 10.2 8.4 25.3 7.1 33.8-3.1 16.6-19.9 41-31.4 66.9-31.4s50.3 11.4 66.9 31.4c8.1 9.7 23.1 11.9 33.8 3.1 10.2-8.5 11.5-23.6 3.1-33.8C326 321.7 288.2 304 248 304z" class=""></path></svg>`,
+    2: `<svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="meh" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg-inline--fa fa-meh fa-w-16 fa-lg"><path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200zm-80-216c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm160-64c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm8 144H160c-13.2 0-24 10.8-24 24s10.8 24 24 24h176c13.2 0 24-10.8 24-24s-10.8-24-24-24z" class=""></path></svg>`,
+    3: `<svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="smile" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg-inline--fa fa-smile fa-w-16 fa-lg"><path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200zm-80-216c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm160 0c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm4 72.6c-20.8 25-51.5 39.4-84 39.4s-63.2-14.3-84-39.4c-8.5-10.2-23.7-11.5-33.8-3.1-10.2 8.5-11.5 23.6-3.1 33.8 30 36 74.1 56.6 120.9 56.6s90.9-20.6 120.9-56.6c8.5-10.2 7.1-25.3-3.1-33.8-10.1-8.4-25.3-7.1-33.8 3.1z" class=""></path></svg>`
+  };
+
+  const STAR_SVG = `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-star fa-w-18"><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" class=""></path></svg>`;
+
   function styled_log(...texts) {
     console.log(
       '%cAniList Modifier%c ' + texts.join(' '),
@@ -33,11 +41,10 @@
     return feed_item_els.filter(f => {
       if (!is_feed_item(f)) return false;
 
-      const status_text = f.querySelector('.status').innerText;
-      return (
-        status_text.startsWith('Completed') ||
-        status_text.startsWith('Dropped') ||
-        status_text.startsWith('Rewatched')
+      const el = f.querySelector('.status');
+      const main_status_text = el.childNodes[0].textContent?.trim() || '';
+      return ['Completed', 'Dropped', 'Rewatched', 'Reread'].includes(
+        main_status_text
       );
     });
   }
@@ -65,23 +72,38 @@
     return 'a';
   }
 
-  function update_status_with_score(status_el, score) {
+  function update_status_with_score(status_el, score, score_format) {
     const mod = document.createElement('span');
     mod.classList.add('score-info');
+    status_el.appendChild(mod);
 
-    if (score) {
-      const article = get_score_article(score);
-      mod.innerHTML += ` and rated it ${article} <b>${score}</b>.`;
-    } else {
+    if (!score) {
       mod.innerHTML += ` without rating it.`;
+      return;
     }
 
-    status_el.appendChild(mod);
+    const article = get_score_article(score);
+    switch (score_format) {
+      case 'POINT_10':
+      case 'POINT_10_DECIMAL':
+        mod.innerHTML += ` and rated it ${article} <b>${score}</b>.`;
+        return;
+      case 'POINT_100':
+        mod.innerHTML += ` and rated it ${article} <b>${score}/100</b>.`;
+        return;
+      case 'POINT_5':
+        mod.innerHTML += ` and gave it ${score} ` + STAR_SVG;
+        return;
+      case 'POINT_3':
+        mod.innerHTML += ` and gave it a &nbsp;` + FACE_SVGS[score];
+        return;
+    }
   }
 
   async function update_feed_items(feed_item_els) {
-    feed_items = get_scorable_feed_items(feed_item_els);
+    feed_item_els = get_scorable_feed_items(feed_item_els);
     const feed_items = parse_feed_items(feed_item_els);
+    console.log(feed_item_els);
 
     if (!feed_items.length) return;
 
@@ -92,12 +114,12 @@
       `Updating ${feed_items.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
     );
 
-    scores.forEach(({ user, id, score }) => {
+    scores.forEach(({ user, id, score, score_format }) => {
       const status_el = feed_items.find(
         fi => fi.user === user && fi.id === id
       ).status_el;
 
-      update_status_with_score(status_el, score);
+      update_status_with_score(status_el, score, score_format);
     });
   }
 
@@ -118,11 +140,11 @@
     if (!el) return '';
 
     return (
-      el.querySelector('a.cover').href +
+      el.querySelector('a.cover')?.href +
       ' ' +
-      el.querySelector('a.name').innerText.trim() +
+      el.querySelector('a.name')?.innerText.trim() +
       ' ' +
-      el.querySelector('div.status').innerText.trim()
+      el.querySelector('div.status')?.innerText.trim()
     );
   }
 
