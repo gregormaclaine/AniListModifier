@@ -29,28 +29,50 @@
     );
   }
 
-  async function update_feed_items(feed_items) {
-    feed_items = feed_items
-      .filter(f => {
-        if (!is_feed_item(f)) return false;
+  function get_scorable_feed_items(feed_item_els) {
+    return feed_item_els.filter(f => {
+      if (!is_feed_item(f)) return false;
 
-        const status_text = f.querySelector('.status').innerText;
-        return (
-          status_text.startsWith('Completed') ||
-          status_text.startsWith('Dropped') ||
-          status_text.startsWith('Rewatched')
-        );
-      })
-      .map(f => ({
-        user: f.querySelector('.name').innerText.trim(),
-        id: parseInt(
-          f
-            .querySelector('a.cover')
-            .href.split(/anilist\.co\/(anime|manga)\//)[2]
-            .split('/')[0]
-        ),
-        status_el: f.querySelector('.status')
-      }));
+      const status_text = f.querySelector('.status').innerText;
+      return (
+        status_text.startsWith('Completed') ||
+        status_text.startsWith('Dropped') ||
+        status_text.startsWith('Rewatched')
+      );
+    });
+  }
+
+  function parse_feed_items(feed_item_els) {
+    return feed_item_els.map(f => ({
+      user: f.querySelector('.name').innerText.trim(),
+      id: parseInt(
+        f
+          .querySelector('a.cover')
+          .href.split(/anilist\.co\/(anime|manga)\//)[2]
+          .split('/')[0]
+      ),
+      status_el: f.querySelector('.status')
+    }));
+  }
+
+  function update_status_with_score(status_el, score) {
+    const mod = document.createElement('span');
+    mod.classList.add('score-info');
+
+    if (score) {
+      mod.innerHTML += ` and rated it a${
+        score >= 8 && score < 9 ? 'n' : ''
+      } <b>${score}</b>.`;
+    } else {
+      mod.innerHTML += ` without rating it.`;
+    }
+
+    status_el.appendChild(mod);
+  }
+
+  async function update_feed_items(feed_item_els) {
+    feed_items = get_scorable_feed_items(feed_item_els);
+    const feed_items = parse_feed_items(feed_item_els);
 
     if (!feed_items.length) return;
 
@@ -66,17 +88,7 @@
         fi => fi.user === user && fi.id === id
       ).status_el;
 
-      const mod = document.createElement('span');
-      mod.classList.add('score-info');
-
-      if (score) {
-        mod.innerHTML += ` and rated it a${
-          score >= 8 && score < 9 ? 'n' : ''
-        } <b>${score}</b>.`;
-      } else {
-        mod.innerHTML += ` without rating it.`;
-      }
-      status_el.appendChild(mod);
+      update_status_with_score(status_el, score);
     });
   }
 
@@ -101,7 +113,7 @@
       ' ' +
       el.querySelector('a.name').innerText.trim() +
       ' ' +
-      el.querySelector('div.status').innerText
+      el.querySelector('div.status').innerText.trim()
     );
   }
 
