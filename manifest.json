@@ -18,5 +18,10 @@
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": { "48": "icons/48.png" }
+  },
+  "permissions": ["storage", "tabs"]
 }

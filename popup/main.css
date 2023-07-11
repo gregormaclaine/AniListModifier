@@ -1,0 +1,12 @@
+.dev-mode-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 5px;
+}
+
+.dev-mode-line > p {
+  min-width: max-content;
+  margin-right: 2em;
+  font-size: 1.2em;
+}
