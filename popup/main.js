@@ -11,16 +11,8 @@ chrome.runtime.sendMessage({ action: 'is-developer-mode' }, dev_mode => {
 
     // Reload active tab
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      console.log('Reloading current page...');
-
-      chrome.tabs
-        .sendMessage(tabs[0].id, { action: 'please-reload' })
-        .catch(e => {
-          console.log(
-            'Failed to reload page: likely due to page running on previous instance of extension'
-          );
-          console.log(e);
-        });
+      console.log(tabs[0]);
+      chrome.tabs.reload(tabs[0].id);
     });
   });
 });

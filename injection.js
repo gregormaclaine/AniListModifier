@@ -252,8 +252,4 @@
 
   listen_for_url_change(main_until_success);
   window.addEventListener('load', () => main_until_success());
-
-  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    if (request.action === 'please-reload') window.location.reload();
-  });
 })();
