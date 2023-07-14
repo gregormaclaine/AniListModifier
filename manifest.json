@@ -23,5 +23,5 @@
     "default_popup": "popup/index.html",
     "default_icon": { "48": "icons/48.png" }
   },
-  "permissions": ["storage", "tabs"]
+  "permissions": ["storage"]
 }
