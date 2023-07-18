@@ -8,11 +8,14 @@
   const STAR_SVG = `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-star fa-w-18"><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" class=""></path></svg>`;
 
   const extension_state = { VERBOSE: true };
-  chrome.runtime.sendMessage({ action: 'is-developer-mode' }, dev_mode => {
-    extension_state.VERBOSE = dev_mode;
-  });
+  chrome.runtime.sendMessage(
+    { action: 'is-developer-mode' },
+    (dev_mode: boolean) => {
+      extension_state.VERBOSE = dev_mode;
+    }
+  );
 
-  function styled_log(...texts) {
+  function styled_log(...texts: string[]) {
     if (!extension_state.VERBOSE) return;
     console.log(
       '%cAniList Modifier%c ' + texts.join(' '),
@@ -21,18 +24,28 @@
     );
   }
 
-  function is_error_invalid_extension(e) {
+  function is_error_invalid_extension(e: Error) {
     return e.message === 'Extension context invalidated.';
   }
 
-  async function background_api_call(feed_items) {
+  async function background_api_call(feed_items: FeedItem[]): Promise<{
+    scores: {
+      id: number;
+      score: number;
+      user: string;
+      score_format: ScoreFormat;
+    }[];
+    api_calls_left: number;
+    api_calls_total: number;
+    score_format: ScoreFormat;
+  }> {
     try {
       return await chrome.runtime.sendMessage('', {
         action: 'fetch-scores',
         feed_items
       });
     } catch (e) {
-      if (is_error_invalid_extension(e)) {
+      if (is_error_invalid_extension(e as Error)) {
         // Error was caused by the tab and the background script being
         // out of sync. This happens when the extension is reloaded while
         // the current tab is still running a previous load's injection script.
@@ -41,41 +54,45 @@
         styled_log("Couldn't connect to server");
         console.error(e);
       }
-      return { scores: [], api_calls_left: 0, api_calls_total: 0 };
+      return {
+        scores: [],
+        api_calls_left: 0,
+        api_calls_total: 0,
+        score_format: 'POINT_10'
+      };
     }
   }
 
-  function is_feed_item(feed_item) {
+  function is_feed_item(feed_item: Node): feed_item is HTMLElement {
     return (
-      feed_item.classList &&
+      feed_item instanceof Element &&
       feed_item.classList.contains('activity-entry') &&
       (feed_item.classList.contains('activity-manga_list') ||
         feed_item.classList.contains('activity-anime_list'))
     );
   }
 
-  function get_scorable_feed_items(feed_item_els) {
-    return feed_item_els.filter(f => {
+  function get_scorable_feed_items(feed_item_els: Node[]) {
+    return feed_item_els.filter((f): f is HTMLElement => {
       if (!is_feed_item(f)) return false;
 
-      const el = f.querySelector('.status');
-      const main_status_text = el.childNodes[0].textContent?.trim() || '';
+      const el = f.querySelector<HTMLElement>('.status');
+      const main_status_text = el?.childNodes[0].textContent?.trim() || '';
       return ['Completed', 'Dropped', 'Rewatched', 'Reread'].includes(
         main_status_text
       );
     });
   }
 
-  function parse_feed_items(feed_item_els) {
+  function parse_feed_items(feed_item_els: HTMLElement[]) {
     return feed_item_els.map(f => ({
-      user: f.querySelector('.name').innerText.trim(),
+      user: f.querySelector<HTMLElement>('.name')?.innerText.trim() as string,
       id: parseInt(
-        f
-          .querySelector('a.cover')
-          .href.split(/anilist\.co\/(anime|manga)\//)[2]
+        (f.querySelector('a.cover') as HTMLAnchorElement).href
+          .split(/anilist\.co\/(anime|manga)\//)[2]
           .split('/')[0]
       ),
-      status_el: f.querySelector('.status')
+      status_el: f.querySelector('.status') as HTMLElement
     }));
   }
 
@@ -83,13 +100,17 @@
    * Returns whether you should use 'a' or 'an' etc.
    * @param {number} score
    */
-  function get_score_article(score) {
+  function get_score_article(score: number) {
     if (score >= 8 && score < 9) return 'an';
     if (score >= 80 && score < 90) return 'an';
     return 'a';
   }
 
-  function update_status_with_score(status_el, score, score_format) {
+  function update_status_with_score(
+    status_el: HTMLElement,
+    score: number,
+    score_format: ScoreFormat
+  ) {
     const mod = document.createElement('span');
     mod.classList.add('score-info');
     status_el.appendChild(mod);
@@ -112,14 +133,15 @@
         mod.innerHTML += ` and gave it ${score} ` + STAR_SVG;
         return;
       case 'POINT_3':
-        mod.innerHTML += ` and gave it a &nbsp;` + FACE_SVGS[score];
+        mod.innerHTML +=
+          ` and gave it a &nbsp;` + FACE_SVGS[score as 1 | 2 | 3];
         return;
     }
   }
 
-  async function update_feed_items(feed_item_els) {
-    feed_item_els = get_scorable_feed_items(feed_item_els);
-    const feed_items = parse_feed_items(feed_item_els);
+  async function update_feed_items(feed_item_els: Node[]) {
+    const scorable__els = get_scorable_feed_items(feed_item_els);
+    const feed_items = parse_feed_items(scorable__els);
 
     if (!feed_items.length) return;
 
@@ -134,14 +156,14 @@
     scores.forEach(({ user, id, score, score_format }) => {
       const status_el = feed_items.find(
         fi => fi.user === user && fi.id === id
-      ).status_el;
+      )?.status_el;
 
-      update_status_with_score(status_el, score, score_format);
+      if (status_el) update_status_with_score(status_el, score, score_format);
     });
   }
 
-  function should_node_be_modded(node) {
-    if (!node.classList) return false;
+  function should_node_be_modded(node: Node) {
+    if (!(node instanceof Element)) return false;
 
     if (
       !node.classList.contains('activity-anime_list') &&
@@ -153,15 +175,15 @@
   }
 
   function get_top_feed_item_hash() {
-    const el = document.querySelector('.activity-feed').children[0];
+    const el = document.querySelector('.activity-feed')?.children[0];
     if (!el) return '';
 
     return (
-      el.querySelector('a.cover')?.href +
+      el.querySelector<HTMLAnchorElement>('a.cover')?.href +
       ' ' +
-      el.querySelector('a.name')?.innerText.trim() +
+      el.querySelector<HTMLAnchorElement>('a.name')?.innerText.trim() +
       ' ' +
-      el.querySelector('div.status')?.innerText.trim()
+      el.querySelector<HTMLElement>('div.status')?.innerText.trim()
     );
   }
 
@@ -172,7 +194,7 @@
     main_until_success();
   }
 
-  function listen_for_url_change(callback, interval = 100) {
+  function listen_for_url_change(callback: () => void, interval = 100) {
     let current_url = window.location.href;
     setInterval(() => {
       const new_url = window.location.href;
@@ -184,16 +206,15 @@
     }, interval);
   }
 
-  let observer;
+  let observer: MutationObserver;
 
   async function main() {
-    if (!document.querySelector('.activity-feed')) return false;
+    const activity_feed = document.querySelector('.activity-feed');
+    if (!activity_feed) return false;
 
     if (observer) observer.disconnect();
 
-    await update_feed_items([
-      ...document.querySelector('.activity-feed').children
-    ]);
+    await update_feed_items([...activity_feed.children]);
 
     let previous_top_item_hash = get_top_feed_item_hash();
 
@@ -225,7 +246,7 @@
       }
     });
 
-    observer.observe(document.querySelector('.activity-feed'), {
+    observer.observe(activity_feed, {
       attributes: true,
       childList: true,
       subtree: true
@@ -238,12 +259,14 @@
     styled_log('Loading extension...');
     let tries = 0;
 
-    const func = async () => {
+    const func = async (): Promise<void> => {
       tries++;
-      const result = await main({ try: tries });
+      const result = await main();
       if (result)
-        return styled_log(`Successfully attached extension (Attempt ${tries})`);
-      if (tries < max_tries) return setTimeout(func, delay);
+        return void styled_log(
+          `Successfully attached extension (Attempt ${tries})`
+        );
+      if (tries < max_tries) return void setTimeout(func, delay);
       styled_log(`Failed to load extension (Failed Attempts: ${tries})`);
     };
 

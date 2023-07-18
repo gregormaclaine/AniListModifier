@@ -1,4 +1,6 @@
-const checkbox = document.getElementById('dev-mode-checkbox');
+const checkbox = document.getElementById(
+  'dev-mode-checkbox'
+) as HTMLInputElement;
 
 chrome.runtime.sendMessage({ action: 'is-developer-mode' }, dev_mode => {
   checkbox.checked = !!dev_mode;
@@ -11,8 +13,7 @@ chrome.runtime.sendMessage({ action: 'is-developer-mode' }, dev_mode => {
 
     // Reload active tab
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      console.log(tabs[0]);
-      chrome.tabs.reload(tabs[0].id);
+      if (tabs[0].id) chrome.tabs.reload(tabs[0].id);
     });
   });
 });
