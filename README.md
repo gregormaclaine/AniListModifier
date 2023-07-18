@@ -10,4 +10,9 @@ The extension handles all rating types whether they are scaled up to 10 or 100, 
 
 The tool is currently available in the chrome extension store and you can install it [here](https://chrome.google.com/webstore/detail/anilist-modifier/knclmpfhlbdlndgplhbnpajhpjmklfpi).
 
-You may also download the source files directly if you prefer by simply downloading the most recent release on this repository. Note you will only need the files `injection.js`, `background.js`, `manifest.json`, and the `icons/` and `popup/` folders. These can then be installed by enabling developer mode on the extensions tab. Click [here](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/) for further instructions if needed.
+You may also compile the most recent version yourself if you prefer. To do this you will need to download or clone this repository, and then run:
+
+- `npm install` or `yarn install`
+- `npm build` or `yarn build`
+
+This will compile the typescript and move all necessary files to the `build/` folder. This folder can then be installed as an extension by enabling developer mode on the extensions tab. Click [here](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/) for further instructions if needed.
