@@ -1,12 +1,13 @@
 {
   "name": "anilistmodifier",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Chrome extension for AniList that adds score information to activity feed",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "start": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -23,6 +24,7 @@
     "@types/chrome": "^0.0.241",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
+    "transform-json-webpack-plugin": "^0.0.2",
     "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",
     "webpack": "^5.88.2",

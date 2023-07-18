@@ -1176,6 +1176,11 @@ to-regex-range@^5.0.1:
   dependencies:
     is-number "^7.0.0"
 
+transform-json-webpack-plugin@^0.0.2:
+  version "0.0.2"
+  resolved "https://registry.yarnpkg.com/transform-json-webpack-plugin/-/transform-json-webpack-plugin-0.0.2.tgz#01b441acfa8a365701bd8989673cb148608860c7"
+  integrity sha512-/+nllp8j1qwZ61qdC4wQTR45HXbopAk9TXyC+209GboCj+vMFjCAWSq0UsVT8aD7gFoNo8MAd1QIGJfl0cpndA==
+
 ts-loader@^9.4.4:
   version "9.4.4"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-9.4.4.tgz#6ceaf4d58dcc6979f84125335904920884b7cee4"
