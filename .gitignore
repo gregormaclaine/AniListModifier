@@ -4,3 +4,4 @@ temp.*
 .env
 build/
 *.zip
+node_modules/
