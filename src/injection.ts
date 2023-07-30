@@ -54,6 +54,7 @@
         styled_log("Couldn't connect to server");
         console.error(e);
       }
+
       return {
         scores: [],
         api_calls_left: 0,
@@ -214,7 +215,8 @@
 
     if (observer) observer.disconnect();
 
-    await update_feed_items([...activity_feed.children]);
+    let children = [...activity_feed.children];
+    if (children.length) await update_feed_items(children);
 
     let previous_top_item_hash = get_top_feed_item_hash();
 
