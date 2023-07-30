@@ -52,7 +52,14 @@ const sendgql = async (username: string, mediaIds: number[]) => {
     })
   });
 
-  const { data, errors }: JSONResponse<ScoreResponse> = await res.json();
+  let parsed_res: JSONResponse<ScoreResponse>;
+  if (res.ok) {
+    parsed_res = await res.json();
+  } else {
+    const message = res.status === 429 ? 'Too many requests' : res.statusText;
+    parsed_res = { data: null, errors: [{ status: res.status, message }] };
+  }
+  const { data, errors } = parsed_res;
 
   let result: ScoreResult[],
     api_calls_left: number,
@@ -60,7 +67,8 @@ const sendgql = async (username: string, mediaIds: number[]) => {
     score_format: ScoreFormat;
 
   if (errors) {
-    if (errors[0].status !== 404) throw new Error(errors[0].message);
+    if (![404, 429].includes(errors[0].status))
+      throw new Error(errors[0].message);
 
     result = [];
     api_calls_left = -1;
