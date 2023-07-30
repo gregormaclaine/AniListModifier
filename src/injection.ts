@@ -258,7 +258,6 @@
   }
 
   function main_until_success(delay = 100, max_tries = 5) {
-    styled_log('Loading extension...');
     let tries = 0;
 
     const func = async (): Promise<void> => {
@@ -276,5 +275,8 @@
   }
 
   listen_for_url_change(main_until_success);
-  window.addEventListener('load', () => main_until_success());
+  window.addEventListener('load', () => {
+    styled_log('Loading extension...');
+    main_until_success();
+  });
 })();
