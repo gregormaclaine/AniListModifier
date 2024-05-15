@@ -175,6 +175,20 @@
     return !node.querySelector('.status > span.score-info');
   }
 
+  function scroll_to_top_if_feed_is_empty() {
+    const wrapper_el = document.querySelector('.activity-feed-wrap');
+    if (!wrapper_el) return;
+
+    const feed = wrapper_el.querySelector('div.activity-feed')?.children;
+    const scroller = wrapper_el.querySelector('div.scroller')?.children;
+    if (!feed || !scroller) return;
+
+    if (feed.length === 0 && scroller.length == 0) {
+      styled_log('Scrolling to top of page to trigger feed refresh');
+      window.scrollTo(0, 0);
+    }
+  }
+
   function get_top_feed_item_hash() {
     const el = document.querySelector('.activity-feed')?.children[0];
     if (!el) return '';
@@ -274,7 +288,10 @@
     func();
   }
 
-  listen_for_url_change(main_until_success);
+  listen_for_url_change(() => {
+    main_until_success();
+    setTimeout(scroll_to_top_if_feed_is_empty, 100);
+  });
   window.addEventListener('load', () => {
     styled_log('Loading extension...');
     main_until_success();
