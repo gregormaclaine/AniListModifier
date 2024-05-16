@@ -19,13 +19,22 @@
     "url": "https://github.com/gregormaclaine/AnilistModifier/issues"
   },
   "homepage": "https://github.com/gregormaclaine/AnilistModifier#readme",
-  "dependencies": {},
+  "dependencies": {
+    "solid-js": "^1.8.17",
+    "solid-styled-components": "^0.28.5"
+  },
   "devDependencies": {
+    "@babel/core": "^7.24.5",
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-object-rest-spread": "^7.20.7",
+    "@babel/preset-env": "^7.24.5",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/chrome": "^0.0.241",
+    "babel-loader": "^9.1.3",
+    "babel-preset-solid": "^1.8.17",
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "transform-json-webpack-plugin": "^0.0.2",
-    "ts-loader": "^9.4.4",
     "typescript": "^5.1.6",
     "webpack": "^5.88.2",
     "webpack-cli": "^5.1.4"

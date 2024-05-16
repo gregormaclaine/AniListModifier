@@ -17,7 +17,7 @@ module.exports = {
       'src',
       'templates',
       'compare',
-      'index.ts'
+      'index.tsx'
     )
   },
   output: {
@@ -25,14 +25,26 @@ module.exports = {
     filename: '[name].js'
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx']
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            configFile: false,
+            presets: ['@babel/preset-env', 'solid', '@babel/preset-typescript'],
+            plugins: [
+              '@babel/plugin-syntax-dynamic-import',
+              '@babel/plugin-proposal-class-properties',
+              '@babel/plugin-proposal-object-rest-spread'
+            ]
+          }
+        }
       }
     ]
   },
