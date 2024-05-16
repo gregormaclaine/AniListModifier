@@ -11,7 +11,14 @@ module.exports = {
   entry: {
     background: path.resolve(__dirname, 'src', 'background.ts'),
     injection: path.resolve(__dirname, 'src', 'injection.ts'),
-    'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts')
+    'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts'),
+    'templates/compare/main': path.resolve(
+      __dirname,
+      'src',
+      'templates',
+      'compare',
+      'index.ts'
+    )
   },
   output: {
     path: path.join(__dirname, 'build'),
@@ -37,6 +44,18 @@ module.exports = {
         {
           from: './src/popup',
           to: './popup',
+          filter: f => !f.endsWith('.ts'),
+          transform(content, file) {
+            if (file.endsWith('.html')) {
+              return content.toString().replace(/{{version}}/g, 'v' + VERSION);
+            } else {
+              return content;
+            }
+          }
+        },
+        {
+          from: './src/templates',
+          to: './templates',
           filter: f => !f.endsWith('.ts'),
           transform(content, file) {
             if (file.endsWith('.html')) {

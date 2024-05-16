@@ -15,6 +15,9 @@ type AllWatchedAnimeResponse = {
         media: {
           id: number;
           format: MediaFormat;
+          genres: [string];
+          averageScore: number;
+          siteUrl: string;
           title: { userPreferred: string };
           coverImage: { extraLarge: string };
         };
@@ -37,6 +40,9 @@ async function get_all_watched_anime(username: string) {
               media {
                 id
                 format
+                genres
+                averageScore
+                siteUrl
                 title { userPreferred }
                 coverImage { extraLarge }
               }
@@ -49,14 +55,22 @@ async function get_all_watched_anime(username: string) {
 
 function extract_anime_list(response: AllWatchedAnimeResponse) {
   return response.MediaListCollection.lists
+    .filter(list => !list.isCustomList)
     .flatMap(list => list.entries)
     .map(entry => ({
       id: entry.media.id,
-      format: entry.media.format,
-      title: entry.media.title.userPreferred,
-      status: entry.status,
-      score: entry.score,
-      image: entry.media.coverImage.extraLarge
+      anime: {
+        format: entry.media.format,
+        genres: entry.media.genres,
+        url: entry.media.siteUrl,
+        score: entry.media.averageScore / 10,
+        title: entry.media.title.userPreferred,
+        image: entry.media.coverImage.extraLarge
+      },
+      user: {
+        status: entry.status,
+        score: entry.score
+      }
     }));
 }
 
@@ -75,25 +89,16 @@ export async function compare_user_lists(username1: string, username2: string) {
   const anime2 = extract_anime_list(data2);
 
   const common_anime = anime1
-    .map(a => a.id)
-    .filter(id => anime2.findIndex(a => a.id === id) >= 0);
+    .map(({ id, anime, user: me }) => {
+      const theirs = anime2.find(a => a.id === id);
+      if (!theirs) return null;
+      return { id, anime, me, them: theirs.user };
+    })
+    .filter(a => a !== null);
 
-  return [...common_anime].map(id => {
-    const record1 = anime1.find(a => a.id === id);
-    const record2 = anime2.find(a => a.id === id);
-
-    return {
-      Title: record1?.title.substring(0, 15),
-      'Your Score': record1?.score,
-      'Their Score': record2?.score,
-      'Your Status': record1?.status,
-      'Their Status': record2?.status
-    };
-  });
+  return {
+    me_total: anime1.length,
+    them_total: anime2.length,
+    common_anime
+  };
 }
-
-compare_user_lists('username1', 'username2').then(result => {
-  console.table(result);
-
-  console.log(get_rate_limit_info());
-});
