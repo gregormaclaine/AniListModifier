@@ -1,4 +1,4 @@
-import { sendgql, FeedItem } from './api';
+import { get_scores_for_media_set, FeedItem, get_rate_limit_info } from './api';
 
 const gather_info = async (feed_items: FeedItem[]) => {
   feed_items = feed_items.filter(f => f);
@@ -8,28 +8,18 @@ const gather_info = async (feed_items: FeedItem[]) => {
     if (!usernames.includes(user)) usernames.push(user);
   }
 
-  let api_calls_left = Infinity;
-  let api_calls_total = 0;
-
   const all_data = await Promise.all(
     usernames.map(async username => {
-      const {
-        data,
-        score_format,
-        api_calls_left: acl,
-        api_calls_total: act
-      } = await sendgql(
+      const { data, score_format } = await get_scores_for_media_set(
         username,
         feed_items.filter(f => f.user === username).map(f => f.id)
       );
-
-      if (acl >= 0) api_calls_left = Math.min(api_calls_left, acl);
-      if (act >= 0) api_calls_total = act;
 
       return data.map(r => ({ user: username, score_format, ...r }));
     })
   );
 
+  let [api_calls_left, api_calls_total] = get_rate_limit_info();
   return { scores: all_data.flat(), api_calls_left, api_calls_total };
 };
 
