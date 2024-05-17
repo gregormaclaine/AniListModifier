@@ -8,6 +8,11 @@
       "matches": ["https://anilist.co/*"],
       "js": ["injection.js"],
       "css": []
+    },
+    {
+      "matches": ["https://anilist.co/settings/*"],
+      "js": ["templates/settings/main.js"],
+      "css": []
     }
   ],
   "icons": {

@@ -18,6 +18,13 @@ module.exports = {
       'templates',
       'compare',
       'index.tsx'
+    ),
+    'templates/settings/main': path.resolve(
+      __dirname,
+      'src',
+      'templates',
+      'settings',
+      'index.ts'
     )
   },
   output: {
