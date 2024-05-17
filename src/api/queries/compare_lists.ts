@@ -1,5 +1,9 @@
-import { api, get_rate_limit_info } from '../api';
+import { api } from '../api';
 import { MediaFormat, MediaListStatus, ScoreFormat } from '../types';
+
+function average(arr: number[]) {
+  return arr.reduce((acc, cur) => acc + cur, 0) / (arr.length || 1);
+}
 
 type AllWatchedAnimeResponse = {
   MediaListCollection: {
@@ -19,7 +23,7 @@ type AllWatchedAnimeResponse = {
           averageScore: number;
           siteUrl: string;
           title: { userPreferred: string };
-          coverImage: { extraLarge: string };
+          coverImage: { medium: string; extraLarge: string };
         };
       }[];
     }[];
@@ -44,7 +48,7 @@ async function get_all_watched_anime(username: string) {
                 averageScore
                 siteUrl
                 title { userPreferred }
-                coverImage { extraLarge }
+                coverImage { medium, extraLarge }
               }
             }
           }
@@ -65,7 +69,10 @@ function extract_anime_list(response: AllWatchedAnimeResponse) {
         url: entry.media.siteUrl,
         score: entry.media.averageScore / 10,
         title: entry.media.title.userPreferred,
-        image: entry.media.coverImage.extraLarge
+        image: {
+          small: entry.media.coverImage.medium,
+          large: entry.media.coverImage.extraLarge
+        }
       },
       user: {
         status: entry.status,
@@ -96,9 +103,29 @@ export async function compare_user_lists(username1: string, username2: string) {
     })
     .filter(a => a !== null);
 
+  const my_unique = anime1
+    .map(({ id, anime, user: me }) => {
+      if (anime2.find(a => a.id === id)) return null;
+      return { id, anime, me, them: null };
+    })
+    .filter(a => a !== null);
+
+  const their_unique = anime2
+    .map(({ id, anime, user: them }) => {
+      if (anime1.find(a => a.id === id)) return null;
+      return { id, anime, them, me: null };
+    })
+    .filter(a => a !== null);
+
   return {
     me_total: anime1.length,
     them_total: anime2.length,
-    common_anime
+    me_average: average(anime1.map(a => a.user.score).filter(s => s)),
+    them_average: average(anime2.map(a => a.user.score).filter(s => s)),
+    common_anime,
+    my_unique,
+    their_unique
   };
 }
+
+export type ComparisonData = Awaited<ReturnType<typeof compare_user_lists>>;
