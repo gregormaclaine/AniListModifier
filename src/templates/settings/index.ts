@@ -16,7 +16,7 @@ function attach_settings() {
 
   if (!location.href.includes('/settings/apps')) return;
 
-  labelled_log('Inserting Extension Settings');
+  labelled_log('Inserting extension settings...');
   const element = document.createElement('div');
   element.id = ELID;
   content_el.appendChild(element);
