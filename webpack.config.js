@@ -56,7 +56,7 @@ module.exports = {
         {
           from: './src/popup',
           to: './popup',
-          filter: f => !f.endsWith('.ts'),
+          filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
             if (file.endsWith('.html')) {
               return content.toString().replace(/{{version}}/g, 'v' + VERSION);
@@ -68,7 +68,7 @@ module.exports = {
         {
           from: './src/templates',
           to: './templates',
-          filter: f => !f.endsWith('.ts'),
+          filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
             if (file.endsWith('.html')) {
               return content.toString().replace(/{{version}}/g, 'v' + VERSION);
