@@ -1,15 +1,17 @@
+import {
+  get_true as get_settings,
+  update as update_setting
+} from '../settings/content';
+
 const checkbox = document.getElementById(
   'dev-mode-checkbox'
 ) as HTMLInputElement;
 
-chrome.runtime.sendMessage({ action: 'is-developer-mode' }, dev_mode => {
-  checkbox.checked = !!dev_mode;
+get_settings().then(({ verbose }) => {
+  checkbox.checked = !!verbose;
 
   checkbox.addEventListener('change', () => {
-    chrome.runtime.sendMessage({
-      action: 'set-developer-mode',
-      value: checkbox.checked
-    });
+    update_setting('verbose', checkbox.checked);
 
     // Reload active tab
     chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
