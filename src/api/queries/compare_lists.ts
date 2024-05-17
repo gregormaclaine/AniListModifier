@@ -1,3 +1,4 @@
+import { labelled_log } from '../../utils';
 import { api, get_rate_limit_info } from '../api';
 import { MediaFormat, MediaListStatus, ScoreFormat } from '../types';
 
@@ -75,7 +76,12 @@ function extract_anime_list(response: AllWatchedAnimeResponse) {
 }
 
 export async function compare_user_lists(username1: string, username2: string) {
-  console.log('Calling api to compare lists for ', username1, 'and', username2);
+  labelled_log(
+    'Calling api to compare lists for ',
+    username1,
+    'and',
+    username2
+  );
   const { data: data1, errors: errors1 } = await get_all_watched_anime(
     username1
   );

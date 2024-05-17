@@ -1,13 +1,14 @@
 import { createEffect, createResource, Suspense } from 'solid-js';
 import { compare_user_lists, get_rate_limit_info } from '../../api';
 import { render } from 'solid-js/web';
+import { labelled_log } from '../../utils';
 
 const App = () => {
   const [data] = createResource(() =>
     compare_user_lists('kappamac', 'simbaninja')
   );
 
-  createEffect(() => data() && console.log(get_rate_limit_info()));
+  createEffect(() => data() && labelled_log(get_rate_limit_info().toString()));
 
   return (
     <Suspense fallback={<p>Loading...</p>}>

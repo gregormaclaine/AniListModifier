@@ -1,3 +1,4 @@
+import { labelled_log } from '../../utils';
 import { api } from '../api';
 import { ScoreFormat } from '../types';
 
@@ -22,7 +23,7 @@ export const get_scores_for_media_set = async (
   username: string,
   mediaIds: number[]
 ) => {
-  console.log('Calling api for', username, mediaIds);
+  labelled_log('Calling api for', username, mediaIds);
   const { data, errors } = await api<ScoreResponse>(
     `
         query GetMediaScore($username: String, $mediaIds: [Int]) {
