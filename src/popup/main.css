@@ -43,3 +43,21 @@ main {
   margin-right: 2em;
   font-size: 1.2em;
 }
+
+.more-settings {
+  font-style: italic;
+  font-size: 1.1em;
+  color: white;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0.2em 0;
+  cursor: pointer;
+}
+
+.more-settings > img {
+  height: 1.1em;
+  margin-left: 0.1em;
+}
