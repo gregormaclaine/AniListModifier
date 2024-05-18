@@ -1,7 +1,9 @@
-import { log } from './settings';
+import { get as get_settings, log } from './settings';
 import { main as update_feed, reset as reset_feed } from './scored_feed';
 
 function scroll_to_top_if_feed_is_empty() {
+  if (!get_settings().autoscroll) return;
+
   const wrapper_el = document.querySelector('.activity-feed-wrap');
   if (!wrapper_el) return;
 
@@ -21,7 +23,7 @@ function main() {
   let current_url = location.href;
 
   let activity_feed = document.querySelector('.activity-feed');
-  if (activity_feed) {
+  if (activity_feed && get_settings().scored_feed) {
     update_feed(activity_feed).then(() =>
       log('Successfully attached extension')
     );
@@ -33,7 +35,10 @@ function main() {
       current_url = location.href;
     }
 
-    if (!activity_feed || !document.body.contains(activity_feed)) {
+    if (
+      get_settings().scored_feed &&
+      (!activity_feed || !document.body.contains(activity_feed))
+    ) {
       reset_feed();
       activity_feed = document.querySelector('.activity-feed');
       if (activity_feed) {
