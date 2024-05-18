@@ -1,4 +1,4 @@
-import { default_settings, ExtensionSettings } from '.';
+import { default_settings, ExtensionSettings } from '../settings';
 
 let settings = default_settings();
 get_true().then(_s => {

@@ -1,6 +1,6 @@
-import { type ScoreFormat } from './api';
-import { get as get_settings } from './settings/content';
-import { get_color } from './utils';
+import { type ScoreFormat } from '../api';
+import { get as get_settings } from './settings';
+import { get_color } from '../utils';
 
 export default function (score: number, score_format: ScoreFormat) {
   if (score === 0) return 'unset';

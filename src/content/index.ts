@@ -1,6 +1,6 @@
-import { type ScoreFormat, type FeedItem } from './api';
-import { labelled_log, listen_for_url_change } from './utils';
-import { get as get_settings } from './settings/content';
+import { type ScoreFormat, type FeedItem } from '../api';
+import { labelled_log, listen_for_url_change } from '../utils';
+import { get as get_settings } from './settings';
 import rating_color from './color';
 
 const FACE_SVGS = {

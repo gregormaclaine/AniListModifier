@@ -1,7 +1,7 @@
 import {
   get_true as get_settings,
   update as update_setting
-} from '../settings/content';
+} from '../content/settings';
 
 const checkbox = document.getElementById(
   'dev-mode-checkbox'

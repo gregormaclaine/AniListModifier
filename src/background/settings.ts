@@ -1,4 +1,4 @@
-import { default_settings, ExtensionSettings } from '.';
+import { default_settings, ExtensionSettings } from '../settings';
 import { is_object, labelled_log } from '../utils';
 
 function fill_settings(settings: unknown): ExtensionSettings {

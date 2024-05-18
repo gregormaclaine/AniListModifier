@@ -1,6 +1,10 @@
-import { get_scores_for_media_set, FeedItem, get_rate_limit_info } from './api';
-import handle_settings_requests from './settings/background';
-import { is_object } from './utils';
+import {
+  get_scores_for_media_set,
+  FeedItem,
+  get_rate_limit_info
+} from '../api';
+import handle_settings_requests from './settings';
+import { is_object } from '../utils';
 
 const gather_info = async (feed_items: FeedItem[]) => {
   feed_items = feed_items.filter(f => f);
