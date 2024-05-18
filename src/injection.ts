@@ -185,12 +185,21 @@ function get_top_feed_item_hash() {
   const el = document.querySelector('.activity-feed')?.children[0];
   if (!el) return '';
 
+  // The following is done to the status div so that the hash does not include
+  // the <span> element that is added by the extension, as that would cause
+  // the extension to see its own update as a new show.
+  const status_div = el.querySelector<HTMLElement>('div.status');
+  const status = [...(status_div?.childNodes || [])]
+    .slice(0, 2)
+    .map(el => el.textContent?.toString().trim())
+    .join(' ');
+
   return (
     el.querySelector<HTMLAnchorElement>('a.cover')?.href +
     ' ' +
     el.querySelector<HTMLAnchorElement>('a.name')?.innerText.trim() +
     ' ' +
-    el.querySelector<HTMLElement>('div.status')?.innerText.trim()
+    status
   );
 }
 
