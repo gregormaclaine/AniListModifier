@@ -1,4 +1,4 @@
-import { get_color } from '../color';
+import { get_color } from '../utils';
 
 export type ExtensionSettings = {
   verbose: boolean;

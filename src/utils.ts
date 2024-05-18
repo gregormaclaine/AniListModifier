@@ -23,3 +23,11 @@ export function listen_for_url_change(
 export function is_object(x: unknown): x is Exclude<object, null> {
   return typeof x === 'object' && !Array.isArray(x) && x !== null;
 }
+
+export function lerp(x: number, a: number, b: number) {
+  return a + (b - a) * x;
+}
+
+export function get_color(perc: number, saturation: number = 100) {
+  return `hsl(${Math.ceil(lerp(perc, 0, 110))}, ${saturation}%, 50%)`;
+}
