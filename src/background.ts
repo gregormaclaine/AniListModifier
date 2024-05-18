@@ -1,5 +1,6 @@
 import { get_scores_for_media_set, FeedItem, get_rate_limit_info } from './api';
-import settings_listener from './settings/background';
+import handle_settings_requests from './settings/background';
+import { is_object } from './utils';
 
 const gather_info = async (feed_items: FeedItem[]) => {
   feed_items = feed_items.filter(f => f);
@@ -24,14 +25,22 @@ const gather_info = async (feed_items: FeedItem[]) => {
   return { scores: all_data.flat(), api_calls_left, api_calls_total };
 };
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  switch (request.action) {
-    case 'fetch-scores':
-      gather_info(request.feed_items).then(sendResponse);
-      return true;
-    default:
-      return;
-  }
-});
+chrome.runtime.onMessage.addListener(
+  (request: unknown, sender, sendResponse) => {
+    if (!is_object(request)) return;
+    const action = 'action' in request ? String(request.action) : '';
+    const value = 'value' in request ? (request.value as any) : null;
 
-settings_listener();
+    switch (action) {
+      case 'fetch-scores':
+        gather_info(value).then(sendResponse);
+        return true;
+
+      case 'get-settings':
+      case 'update-settings':
+        return handle_settings_requests({ action, value }, sendResponse);
+      default:
+        return;
+    }
+  }
+);

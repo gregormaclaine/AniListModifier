@@ -19,3 +19,7 @@ export function listen_for_url_change(
     }
   }, interval);
 }
+
+export function is_object(x: unknown): x is Exclude<object, null> {
+  return typeof x === 'object' && !Array.isArray(x) && x !== null;
+}

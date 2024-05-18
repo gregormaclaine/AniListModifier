@@ -33,7 +33,7 @@ async function background_api_call(feed_items: FeedItem[]): Promise<{
   try {
     return await chrome.runtime.sendMessage('', {
       action: 'fetch-scores',
-      feed_items
+      value: feed_items
     });
   } catch (e) {
     if (is_error_invalid_extension(e as Error)) {
