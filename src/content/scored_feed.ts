@@ -38,7 +38,7 @@ async function background_api_call(feed_items: FeedItem[]): Promise<{
       log('Extension out of sync: consider reloading to fix issue');
     } else {
       log("Couldn't connect to server");
-      console.error(e);
+      console.log(e);
     }
 
     return {
