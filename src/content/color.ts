@@ -2,6 +2,10 @@ import { type ScoreFormat } from '../api';
 import { get as get_settings } from './settings';
 import { get_color } from '../utils';
 
+function is_dark_mode() {
+  return document.body.classList.contains('site-theme-dark');
+}
+
 export default function (score: number, score_format: ScoreFormat) {
   if (score === 0) return 'unset';
 
@@ -22,6 +26,9 @@ export default function (score: number, score_format: ScoreFormat) {
       return settings.custom_colors[Math.ceil(score / max_value[score_format])];
 
     case 'interpolated':
-      return get_color(score / max_value[score_format]);
+      return get_color(
+        score / max_value[score_format],
+        is_dark_mode() ? 100 : 65
+      );
   }
 }

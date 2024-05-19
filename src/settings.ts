@@ -18,6 +18,6 @@ export function default_settings(): ExtensionSettings {
     interp_saturation: 100,
     custom_colors: Array(10)
       .fill(0)
-      .map((_, i) => get_color(i / 9))
+      .map((_, i) => get_color(i / 9, 65))
   };
 }
