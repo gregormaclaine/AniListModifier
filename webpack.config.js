@@ -9,8 +9,8 @@ module.exports = {
   mode: 'production',
   // devtool: 'cheap-module-source-map',
   entry: {
-    background: path.resolve(__dirname, 'src', 'background.ts'),
-    injection: path.resolve(__dirname, 'src', 'injection.ts'),
+    background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
+    injection: path.resolve(__dirname, 'src', 'content', 'index.ts'),
     'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts'),
     'templates/compare/main': path.resolve(
       __dirname,

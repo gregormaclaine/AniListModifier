@@ -1,6 +1,6 @@
-import { ScoreFormat, FeedItem } from './api';
-import { labelled_log, listen_for_url_change } from './utils';
-import { get as get_settings } from './settings/content';
+import { type ScoreFormat, type FeedItem } from '../api';
+import { log } from './settings';
+import rating_color from './color';
 
 const FACE_SVGS = {
   1: `<svg aria-hidden="true" focusable="false" data-prefix="far" data-icon="frown" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" class="svg-inline--fa fa-frown fa-w-16 fa-lg"><path fill="currentColor" d="M248 8C111 8 0 119 0 256s111 248 248 248 248-111 248-248S385 8 248 8zm0 448c-110.3 0-200-89.7-200-200S137.7 56 248 56s200 89.7 200 200-89.7 200-200 200zm-80-216c17.7 0 32-14.3 32-32s-14.3-32-32-32-32 14.3-32 32 14.3 32 32 32zm160-64c-17.7 0-32 14.3-32 32s14.3 32 32 32 32-14.3 32-32-14.3-32-32-32zm-80 128c-40.2 0-78 17.7-103.8 48.6-8.5 10.2-7.1 25.3 3.1 33.8 10.2 8.4 25.3 7.1 33.8-3.1 16.6-19.9 41-31.4 66.9-31.4s50.3 11.4 66.9 31.4c8.1 9.7 23.1 11.9 33.8 3.1 10.2-8.5 11.5-23.6 3.1-33.8C326 321.7 288.2 304 248 304z" class=""></path></svg>`,
@@ -9,10 +9,6 @@ const FACE_SVGS = {
 };
 
 const STAR_SVG = `<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="star" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512" class="svg-inline--fa fa-star fa-w-18"><path fill="currentColor" d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z" class=""></path></svg>`;
-
-function styled_log(...texts: string[]) {
-  if (get_settings().verbose) labelled_log(...texts);
-}
 
 function is_error_invalid_extension(e: Error) {
   return e.message === 'Extension context invalidated.';
@@ -32,17 +28,17 @@ async function background_api_call(feed_items: FeedItem[]): Promise<{
   try {
     return await chrome.runtime.sendMessage('', {
       action: 'fetch-scores',
-      feed_items
+      value: feed_items
     });
   } catch (e) {
     if (is_error_invalid_extension(e as Error)) {
       // Error was caused by the tab and the background script being
       // out of sync. This happens when the extension is reloaded while
       // the current tab is still running a previous load's injection script.
-      styled_log('Extension out of sync: consider reloading to fix issue');
+      log('Extension out of sync: consider reloading to fix issue');
     } else {
-      styled_log("Couldn't connect to server");
-      console.error(e);
+      log("Couldn't connect to server");
+      console.log(e);
     }
 
     return {
@@ -112,13 +108,14 @@ function update_status_with_score(
   }
 
   const article = get_score_article(score);
+  const color = rating_color(score, score_format);
   switch (score_format) {
     case 'POINT_10':
     case 'POINT_10_DECIMAL':
-      mod.innerHTML += ` and rated it ${article} <b>${score}</b>`;
+      mod.innerHTML += ` and rated it ${article} <b style="color: ${color}">${score}</b>`;
       return;
     case 'POINT_100':
-      mod.innerHTML += ` and rated it ${article} <b>${score}/100</b>`;
+      mod.innerHTML += ` and rated it ${article} <b style="color: ${color}">${score}/100</b>`;
       return;
     case 'POINT_5':
       mod.innerHTML += ` and gave it ${score} ` + STAR_SVG;
@@ -140,7 +137,7 @@ async function update_feed_items(feed_item_els: Node[]) {
   );
   if (!scores.length) return;
 
-  styled_log(
+  log(
     `Updating ${scores.length} feed items... (${api_calls_left}/${api_calls_total} API calls remaining)`
   );
 
@@ -165,46 +162,38 @@ function should_node_be_modded(node: Node) {
   return !node.querySelector('.status > span.score-info');
 }
 
-function scroll_to_top_if_feed_is_empty() {
-  const wrapper_el = document.querySelector('.activity-feed-wrap');
-  if (!wrapper_el) return;
-
-  const feed = wrapper_el.querySelector('div.activity-feed')?.children;
-  const scroller = wrapper_el.querySelector('div.scroller')?.children;
-  if (!feed || !scroller) return;
-
-  if (feed.length === 0 && scroller.length == 0) {
-    styled_log('Scrolling to top of page to trigger feed refresh');
-    window.scrollTo(0, 0);
-  }
-}
-
 function get_top_feed_item_hash() {
   const el = document.querySelector('.activity-feed')?.children[0];
   if (!el) return '';
+
+  // The following is done to the status div so that the hash does not include
+  // the <span> element that is added by the extension, as that would cause
+  // the extension to see its own update as a new show.
+  const status_div = el.querySelector<HTMLElement>('div.status');
+  const status = [...(status_div?.childNodes || [])]
+    .slice(0, 2)
+    .map(el => el.textContent?.toString().trim())
+    .join(' ');
 
   return (
     el.querySelector<HTMLAnchorElement>('a.cover')?.href +
     ' ' +
     el.querySelector<HTMLAnchorElement>('a.name')?.innerText.trim() +
     ' ' +
-    el.querySelector<HTMLElement>('div.status')?.innerText.trim()
+    status
   );
-}
-
-function reset_modifications() {
-  [...document.querySelectorAll('.activity-feed span.score-info')].forEach(el =>
-    el.remove()
-  );
-  main_until_success();
 }
 
 let observer: MutationObserver;
 
-async function main() {
-  const activity_feed = document.querySelector('.activity-feed');
-  if (!activity_feed) return false;
+export function reset() {
+  if (observer) observer.disconnect();
+  [...document.querySelectorAll('.activity-feed span.score-info')].forEach(el =>
+    el.remove()
+  );
+}
 
+export async function main(activity_feed: Element) {
   if (observer) observer.disconnect();
 
   let children = [...activity_feed.children];
@@ -235,8 +224,8 @@ async function main() {
           () => (previous_top_item_hash = get_top_feed_item_hash())
         );
     } else {
-      observer.disconnect();
-      reset_modifications();
+      reset();
+      main(activity_feed);
     }
   });
 
@@ -245,33 +234,4 @@ async function main() {
     childList: true,
     subtree: true
   });
-
-  return true;
 }
-
-function main_until_success(delay = 100, max_tries = 5) {
-  let tries = 0;
-
-  const func = async (): Promise<void> => {
-    tries++;
-    const result = await main();
-    if (result)
-      return void styled_log(
-        `Successfully attached extension (Attempt ${tries})`
-      );
-    if (tries < max_tries) return void setTimeout(func, delay);
-    styled_log(`Failed to load extension (Failed Attempts: ${tries})`);
-  };
-
-  func();
-}
-
-listen_for_url_change(url => {
-  styled_log('Navigated to ' + url);
-  main_until_success();
-  setTimeout(scroll_to_top_if_feed_is_empty, 100);
-});
-window.addEventListener('load', () => {
-  styled_log('Loading extension...');
-  main_until_success();
-});

@@ -1,4 +1,5 @@
-import { default_settings, ExtensionSettings } from '.';
+import { default_settings, ExtensionSettings } from '../settings';
+import { labelled_log } from '../utils';
 
 let settings = default_settings();
 get_true().then(_s => {
@@ -32,4 +33,8 @@ export function update<T extends keyof ExtensionSettings>(
     action: 'update-settings',
     value: settings
   });
+}
+
+export function log(...texts: string[]) {
+  if (settings.verbose) labelled_log(...texts);
 }
