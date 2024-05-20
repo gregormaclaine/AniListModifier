@@ -45,6 +45,7 @@ export const get_scores_for_media_set = async (
     if ([404, 429].includes(errors[0].status)) {
       return { data: [], score_format: 'POINT_10' };
     }
+    labelled_log('Error occurred:', data, errors);
     throw new Error(errors[0].message);
   }
 
