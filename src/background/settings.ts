@@ -24,6 +24,17 @@ export default function (
       chrome.storage.local.set({
         animod_settings: JSON.stringify(request.value)
       });
+
+      chrome.tabs
+        .query({ active: true, lastFocusedWindow: true })
+        .then(([tab]) => {
+          if (!tab || !tab.id) return;
+          chrome.tabs.sendMessage(tab.id, {
+            action: 'refresh-settings',
+            value: request.value
+          });
+        });
+
       return;
 
     case 'get-settings':

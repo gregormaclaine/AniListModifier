@@ -1,5 +1,5 @@
 import { default_settings, ExtensionSettings } from '../settings';
-import { labelled_log } from '../utils';
+import { is_object, labelled_log } from '../utils';
 
 let settings = default_settings();
 get_true().then(_s => {
@@ -40,3 +40,17 @@ export function update<T extends keyof ExtensionSettings>(
 export function log(...texts: any[]) {
   if (settings.verbose) labelled_log(...texts);
 }
+
+chrome.runtime.onMessage.addListener((message: unknown, send, sendResponse) => {
+  if (!is_object(message)) return;
+  const action = 'action' in message ? String(message.action) : '';
+  const value = 'value' in message ? (message.value as any) : null;
+
+  switch (action) {
+    case 'refresh-settings':
+      settings = value;
+
+    default:
+      return;
+  }
+});
