@@ -1,5 +1,5 @@
 import { render } from 'solid-js/web';
-import { log } from '../../content/settings';
+import { log } from '../../settings';
 import App from './insert';
 
 const ELID = 'animod-settings-insert';

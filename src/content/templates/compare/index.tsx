@@ -1,7 +1,7 @@
 import { createEffect, createResource, Suspense } from 'solid-js';
-import { compare_user_lists, get_rate_limit_info } from '../../api';
+import { compare_user_lists, get_rate_limit_info } from '../../../api';
 import { render } from 'solid-js/web';
-import { labelled_log } from '../../utils';
+import { labelled_log } from '../../../utils';
 
 const App = () => {
   const [data] = createResource(() =>

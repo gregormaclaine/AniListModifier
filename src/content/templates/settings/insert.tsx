@@ -3,8 +3,8 @@ import {
   update as update_setting,
   get as get_settings,
   log
-} from '../../content/settings';
-import { ExtensionSettings } from '../../settings';
+} from '../../settings';
+import { ExtensionSettings } from '../../../settings';
 
 const CheckBox = (props: {
   value: boolean;

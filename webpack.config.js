@@ -15,6 +15,7 @@ module.exports = {
     'templates/compare/main': path.resolve(
       __dirname,
       'src',
+      'content',
       'templates',
       'compare',
       'index.tsx'
@@ -22,6 +23,7 @@ module.exports = {
     'templates/settings/main': path.resolve(
       __dirname,
       'src',
+      'content',
       'templates',
       'settings',
       'index.ts'
@@ -73,7 +75,7 @@ module.exports = {
           }
         },
         {
-          from: './src/templates',
+          from: './src/content/templates',
           to: './templates',
           filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
