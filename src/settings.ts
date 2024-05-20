@@ -1,5 +1,3 @@
-import { get_color } from './utils';
-
 export type ExtensionSettings = {
   verbose: boolean;
   rating_colors: 'off' | 'interpolated' | 'custom';
@@ -14,8 +12,17 @@ export function default_settings(): ExtensionSettings {
     autoscroll: true,
     scored_feed: true,
     rating_colors: 'interpolated',
-    custom_colors: Array(10)
-      .fill(0)
-      .map((_, i) => get_color(i / 9, 65))
+    custom_colors: [
+      '#d22d2d',
+      '#d2512d',
+      '#d2722d',
+      '#d2932d',
+      '#d2b42d',
+      '#cdd22d',
+      '#acd22d',
+      '#8bd22d',
+      '#69d22d',
+      '#48d22d'
+    ]
   };
 }
