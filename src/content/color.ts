@@ -23,7 +23,9 @@ export default function (score: number, score_format: ScoreFormat) {
       return 'unset';
 
     case 'custom':
-      return settings.custom_colors[Math.ceil(score / max_value[score_format])];
+      return settings.custom_colors[
+        Math.floor((score / max_value[score_format]) * 9)
+      ];
 
     case 'interpolated':
       return get_color(
