@@ -146,7 +146,9 @@ const CustomColorSelector = (props: {
             if (
               confirm('Are you sure? This cannot be reversed automatically.')
             ) {
-              set_colors(default_settings().custom_colors);
+              const colors = default_settings().custom_colors;
+              set_colors(colors);
+              props.on_change(colors);
               set_message('Colors reset to default');
             }
           }}
