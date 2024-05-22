@@ -1,8 +1,14 @@
 # AniList Modifier
 
-This is a chrome extension that loads when going to the [AniList Homepage](https://anilist.co/home). I had an issue where I didn't like that when I saw a friend complete a show on my feed, I couldn't tell what they rated it without clicking through onto their list and finding the entry. Therefore here's an extension that injects a script which calls the AniList API and modifies the activity feed so that it now includes the rating.
+This is a chrome extension to improve your experience using [AniList Homepage](https://anilist.co/home).
 
-The extension handles all rating types whether they are scaled up to 10 or 100, or even if you choose the 5 star or smiley face system.
+**Features**:
+- ⭐ Adds scores to user activity when completing or dropping anime and manga
+  - Works for all rating types whether they are scaled up to 10 or 100, or the 5 star or smiley face system
+- 🎨 Color codes ratings both in the activity feed and media lists
+  - Colors can be calculated automatically or customised to your preference
+- ⏫ Automatically scrolls to top of page when the activity feed does not populate
+- 💎 All features can be enabled or disabled independently via the settings page
 
 ![Example](docs/example.png)
 
