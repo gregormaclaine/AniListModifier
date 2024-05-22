@@ -1,7 +1,6 @@
 import { createSignal, For, Show } from 'solid-js';
 import { default_settings, ExtensionSettings } from '../../../settings';
 import { styled } from 'solid-styled-components';
-import settings from '../../../background/settings';
 
 const MainWrapper = styled('div')`
   display: flex;
