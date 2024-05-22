@@ -11,7 +11,6 @@ module.exports = {
   entry: {
     background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
     injection: path.resolve(__dirname, 'src', 'content', 'index.ts'),
-    'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts'),
     'templates/settings/main': path.resolve(
       __dirname,
       'src',
