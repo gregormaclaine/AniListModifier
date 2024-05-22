@@ -1,4 +1,4 @@
-import { type ScoreFormat } from '../api';
+import { type ScoreFormat } from '../types';
 import { get as get_settings } from './settings';
 import { get_color } from '../utils';
 

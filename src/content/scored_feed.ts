@@ -1,4 +1,4 @@
-import { type ScoreFormat, type FeedItem } from '../api';
+import { type ScoreFormat, type FeedItem } from '../types';
 import { log } from './settings';
 import rating_color from './color';
 

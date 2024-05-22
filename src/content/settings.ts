@@ -1,4 +1,4 @@
-import { default_settings, ExtensionSettings } from '../settings';
+import { default_settings, type ExtensionSettings } from '../settings';
 import { is_object, labelled_log } from '../utils';
 
 let settings = default_settings();

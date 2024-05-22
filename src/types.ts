@@ -24,3 +24,8 @@ export type MediaFormat =
   | 'MANGA'
   | 'NOVEL'
   | 'ONE_SHOT';
+
+export type FeedItem = {
+  user: string;
+  id: number;
+};

@@ -1,8 +1,8 @@
-import { labelled_log } from '../../utils';
+import { labelled_log } from '../../../utils';
 import { api } from '../api';
-import { ScoreFormat } from '../types';
+import { ScoreFormat } from '../../../types';
 
-export type ScoreResponse = {
+type ScoreResponse = {
   Page: {
     mediaList: {
       score: number;
@@ -12,11 +12,6 @@ export type ScoreResponse = {
       };
     }[];
   };
-};
-
-export type FeedItem = {
-  user: string;
-  id: number;
 };
 
 export const get_scores_for_media_set = async (
