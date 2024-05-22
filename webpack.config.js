@@ -9,15 +9,15 @@ module.exports = {
   mode: 'production',
   // devtool: 'cheap-module-source-map',
   entry: {
-    background: path.resolve(__dirname, 'src', 'background.ts'),
-    injection: path.resolve(__dirname, 'src', 'injection.ts'),
-    'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts'),
-    'templates/compare/main': path.resolve(
+    background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
+    injection: path.resolve(__dirname, 'src', 'content', 'index.ts'),
+    'templates/settings/main': path.resolve(
       __dirname,
       'src',
+      'content',
       'templates',
-      'compare',
-      'index.tsx'
+      'settings',
+      'index.ts'
     )
   },
   output: {
@@ -56,7 +56,7 @@ module.exports = {
         {
           from: './src/popup',
           to: './popup',
-          filter: f => !f.endsWith('.ts'),
+          filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
             if (file.endsWith('.html')) {
               return content.toString().replace(/{{version}}/g, 'v' + VERSION);
@@ -66,9 +66,9 @@ module.exports = {
           }
         },
         {
-          from: './src/templates',
+          from: './src/content/templates',
           to: './templates',
-          filter: f => !f.endsWith('.ts'),
+          filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
             if (file.endsWith('.html')) {
               return content.toString().replace(/{{version}}/g, 'v' + VERSION);

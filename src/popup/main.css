@@ -29,17 +29,29 @@ header > span {
 }
 
 main {
+  width: max-content;
   padding: 0.2em 0.5em;
 }
 
-.dev-mode-line {
+main a {
+  font-size: 1.2em;
+  color: white;
+  text-decoration: none;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  width: 100%;
+  margin: 0.5em 0;
+  cursor: pointer;
+  padding: 0.2em 0.3em;
+  border: 1px solid #84898e;
+  border-radius: 3px;
 }
 
-.dev-mode-line > p {
-  min-width: max-content;
-  margin-right: 2em;
-  font-size: 1.2em;
+main a:hover {
+  background-color: #474d56;
+}
+
+main a > span {
+  margin: 0 0.25em;
 }

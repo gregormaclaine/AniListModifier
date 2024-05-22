@@ -6,7 +6,7 @@
   "content_scripts": [
     {
       "matches": ["https://anilist.co/*"],
-      "js": ["injection.js"],
+      "js": ["injection.js", "templates/settings/main.js"],
       "css": []
     }
   ],

@@ -1,5 +1,9 @@
 import { api } from '../api';
-import { MediaFormat, MediaListStatus, ScoreFormat } from '../types';
+import {
+  type MediaFormat,
+  type MediaListStatus,
+  type ScoreFormat
+} from '../../../types';
 
 function average(arr: number[]) {
   return arr.reduce((acc, cur) => acc + cur, 0) / (arr.length || 1);

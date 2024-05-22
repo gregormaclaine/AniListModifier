@@ -31,11 +31,24 @@ export async function api<T>(
   query: string,
   variables: object
 ): Promise<JSONResponse<T>> {
-  const res = await fetch('https://graphql.anilist.co', {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ variables, query })
-  });
+  let res: Response;
+  try {
+    res = await fetch('https://graphql.anilist.co', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ variables, query })
+    });
+  } catch (e) {
+    let message: string;
+    if (typeof e === 'string') {
+      message = e;
+    } else if (e instanceof Error) {
+      message = e.message;
+    } else {
+      message = 'Unknown error';
+    }
+    return { data: null, errors: [{ status: 0, message }] };
+  }
 
   update_rate_limit_info(res.headers);
 
