@@ -15,7 +15,7 @@ const Settings = () => {
         value={settings().scored_feed}
         toggle={() => {
           update_setting('scored_feed', !settings().scored_feed);
-          set_settings(get_settings());
+          set_settings({ ...get_settings() });
         }}
       />
 
@@ -24,7 +24,7 @@ const Settings = () => {
         value={settings().autoscroll}
         toggle={() => {
           update_setting('autoscroll', !settings().autoscroll);
-          set_settings(get_settings());
+          set_settings({ ...get_settings() });
         }}
       />
 
@@ -50,7 +50,7 @@ const Settings = () => {
         value={settings().rating_colors}
         on_change={value => {
           update_setting('rating_colors', value);
-          set_settings(get_settings());
+          set_settings({ ...get_settings() });
         }}
       />
 
@@ -59,7 +59,7 @@ const Settings = () => {
           settings={settings()}
           on_change={colors => {
             update_setting('custom_colors', colors);
-            set_settings(get_settings());
+            set_settings({ ...get_settings() });
           }}
         />
       </Show>
@@ -70,7 +70,7 @@ const Settings = () => {
         value={settings().verbose}
         toggle={() => {
           update_setting('verbose', !settings().verbose);
-          set_settings(get_settings());
+          set_settings({ ...get_settings() });
         }}
       />
     </>
