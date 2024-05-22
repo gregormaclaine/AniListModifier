@@ -6,7 +6,7 @@
     {
       "label": "Build and Run Single TS File",
       "type": "shell",
-      "command": "npx tsc ${file} --outDir /tmp/ --rootDir ${fileWorkspaceFolder} && node /tmp/${relativeFileDirname}/${fileBasenameNoExtension}.js",
+      "command": "npx tsc ${file} --outDir /tmp/ --rootDir ${fileWorkspaceFolder} --downlevelIteration && node /tmp/${relativeFileDirname}/${fileBasenameNoExtension}.js",
       "problemMatcher": []
     }
   ]

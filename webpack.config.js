@@ -9,23 +9,42 @@ module.exports = {
   mode: 'production',
   // devtool: 'cheap-module-source-map',
   entry: {
-    background: path.resolve(__dirname, 'src', 'background.ts'),
-    injection: path.resolve(__dirname, 'src', 'injection.ts'),
-    'popup/main': path.resolve(__dirname, 'src', 'popup', 'main.ts')
+    background: path.resolve(__dirname, 'src', 'background', 'index.ts'),
+    injection: path.resolve(__dirname, 'src', 'content', 'index.ts'),
+    'templates/settings/main': path.resolve(
+      __dirname,
+      'src',
+      'content',
+      'templates',
+      'settings',
+      'index.ts'
+    )
   },
   output: {
     path: path.join(__dirname, 'build'),
     filename: '[name].js'
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.js', '.tsx']
   },
   module: {
     rules: [
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
-        exclude: /node_modules/
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            babelrc: false,
+            configFile: false,
+            presets: ['@babel/preset-env', 'solid', '@babel/preset-typescript'],
+            plugins: [
+              '@babel/plugin-syntax-dynamic-import',
+              '@babel/plugin-proposal-class-properties',
+              '@babel/plugin-proposal-object-rest-spread'
+            ]
+          }
+        }
       }
     ]
   },
@@ -37,7 +56,19 @@ module.exports = {
         {
           from: './src/popup',
           to: './popup',
-          filter: f => !f.endsWith('.ts'),
+          filter: f => !f.match(/\.tsx?$/),
+          transform(content, file) {
+            if (file.endsWith('.html')) {
+              return content.toString().replace(/{{version}}/g, 'v' + VERSION);
+            } else {
+              return content;
+            }
+          }
+        },
+        {
+          from: './src/content/templates',
+          to: './templates',
+          filter: f => !f.match(/\.tsx?$/),
           transform(content, file) {
             if (file.endsWith('.html')) {
               return content.toString().replace(/{{version}}/g, 'v' + VERSION);

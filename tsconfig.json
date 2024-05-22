@@ -8,6 +8,8 @@
     "rootDir": "src",
     "outDir": "build",
     "noEmitOnError": true,
-    "typeRoots": ["node_modules/@types"]
+    "typeRoots": ["node_modules/@types"],
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js"
   }
 }
