@@ -3,8 +3,7 @@
 declare -a entries=("src/content/index.ts"
                     "src/background/index.ts"
                     "src/popup/main.ts"
-                    "src/templates/settings/index.ts"
-                    "src/templates/compare/index.tsx")
+                    "src/content/templates/settings/index.ts")
 
 mkdir /tmp/animod-dep-tree
 
