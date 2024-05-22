@@ -10,31 +10,44 @@ export function get() {
   return settings;
 }
 
-export function get_true(): Promise<ExtensionSettings> {
-  return new Promise(resolve => {
-    chrome.runtime.sendMessage({ action: 'get-settings' }, resolve);
-  });
+export async function get_true(): Promise<ExtensionSettings> {
+  return await secure_message('get-settings');
 }
 
-export function set(new_settings: ExtensionSettings) {
+export async function set(new_settings: ExtensionSettings) {
   settings = new_settings;
-  chrome.runtime.sendMessage({
-    action: 'update-settings',
-    value: new_settings
-  });
+  return await secure_message('update-settings', new_settings);
 }
 
-export function update<T extends keyof ExtensionSettings>(
+export async function update<T extends keyof ExtensionSettings>(
   field: T,
   value: ExtensionSettings[T]
 ) {
   log(`Settings.${field}: ${settings[field]} -> ${value}`);
 
-  settings[field] = value;
-  chrome.runtime.sendMessage({
-    action: 'update-settings',
-    value: settings
-  });
+  if (settings) {
+    settings[field] = value;
+  } else {
+    settings = { ...default_settings(), [field]: value };
+  }
+  return await secure_message('update-settings', settings);
+}
+
+export function is_error_invalid_extension(e: unknown) {
+  return e instanceof Error && e.message === 'Extension context invalidated.';
+}
+
+async function secure_message(action: string, value: any = null) {
+  try {
+    return await chrome.runtime.sendMessage({ action, value });
+  } catch (e) {
+    if (is_error_invalid_extension(e)) {
+      alert('AniList Modifier extension context is invalid. Please Refresh.');
+      return false;
+    } else {
+      throw e;
+    }
+  }
 }
 
 export function log(...texts: any[]) {
