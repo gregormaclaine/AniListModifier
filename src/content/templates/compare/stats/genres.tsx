@@ -1,7 +1,7 @@
 import { createMemo, onMount } from 'solid-js';
 import { Chart, registerables } from 'chart.js';
 import { Bar } from 'solid-chartjs';
-import { ComparisonData } from '../../../api';
+import { ComparisonData } from '../../../../background/api';
 
 function calculate_genre_data(data: ComparisonData) {
   const all_shows = [
