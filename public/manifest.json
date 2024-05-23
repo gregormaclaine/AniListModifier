@@ -6,12 +6,11 @@
   "content_scripts": [
     {
       "matches": ["https://anilist.co/*"],
-      "js": ["injection.js", "templates/settings/main.js"],
-      "css": []
-    },
-    {
-      "matches": ["https://anilist.co/user/*/compare"],
-      "js": ["templates/compare/main.js"],
+      "js": [
+        "injection.js",
+        "templates/settings/main.js",
+        "templates/compare/main.js"
+      ],
       "css": []
     }
   ],

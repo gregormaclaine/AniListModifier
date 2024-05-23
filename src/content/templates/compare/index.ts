@@ -1,6 +1,6 @@
 import { render } from 'solid-js/web';
 import { log } from '../../settings';
-import App from './insert';
+import App from './Stats';
 
 function attach_insert() {
   if (!location.href.match(/anilist\.co\/user\/[^\/]+\/animelist\/compare\/?$/))
@@ -10,9 +10,7 @@ function attach_insert() {
   if (!content_el) return;
   for (const child of content_el.children) child.remove();
 
-  const element = document.createElement('div');
-  content_el.appendChild(element);
-  render(App, element);
+  render(App, content_el);
   log('Successfully attached comparison insert');
 }
 

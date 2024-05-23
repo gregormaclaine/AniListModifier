@@ -1,5 +1,13 @@
 import { createMemo, onMount } from 'solid-js';
-import { Chart, registerables } from 'chart.js';
+import {
+  Chart,
+  BarController,
+  BarElement,
+  LinearScale,
+  Colors,
+  Tooltip,
+  Legend
+} from 'chart.js';
 import { Bar } from 'solid-chartjs';
 import { ComparisonData } from '../../../../background/api';
 
@@ -128,7 +136,14 @@ function get_genre_offset_chart(data: ComparisonData) {
 
 export const GenreBreakdown = (props: { data: ComparisonData }) => {
   onMount(() => {
-    Chart.register(...registerables);
+    Chart.register(
+      LinearScale,
+      BarController,
+      BarElement,
+      Colors,
+      Tooltip,
+      Legend
+    );
   });
 
   const chart_data = createMemo(() => get_genre_offset_chart(props.data));
