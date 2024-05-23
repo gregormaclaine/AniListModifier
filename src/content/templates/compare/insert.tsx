@@ -1,6 +1,8 @@
 import { createEffect, createResource, Show, Suspense } from 'solid-js';
-import { compare_user_lists, get_rate_limit_info } from '../../api';
-import { render } from 'solid-js/web';
+import {
+  compare_user_lists,
+  get_rate_limit_info
+} from '../../../background/api';
 import { GenreBreakdown } from './stats/genres';
 
 const App = () => {
@@ -14,13 +16,10 @@ const App = () => {
     <Suspense fallback={<p>Loading...</p>}>
       <Show when={data()}>
         <GenreBreakdown data={data()} />
-        <pre>{JSON.stringify(data(), null, 2)}</pre>
+        {/* <pre>{JSON.stringify(data(), null, 2)}</pre> */}
       </Show>
     </Suspense>
   );
 };
 
-const main_el = document.createElement('main');
-document.body.appendChild(main_el);
-render(App, main_el);
-main_el.style.border = '1px solid black';
+export default App;

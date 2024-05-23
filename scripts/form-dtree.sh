@@ -2,7 +2,8 @@
 
 declare -a entries=("src/content/index.ts"
                     "src/background/index.ts"
-                    "src/content/templates/settings/index.ts")
+                    "src/content/templates/settings/index.ts"
+                    "src/content/templates/compare/index.ts")
 
 mkdir /tmp/animod-dep-tree
 
@@ -13,7 +14,7 @@ do
 done
 
 # Requires ImageMagick: brew install imagemagick
-convert /tmp/animod-dep-tree/%d.png[0-2] -append /tmp/animod-dep-tree/tree.png
+convert /tmp/animod-dep-tree/%d.png[0-3] -append /tmp/animod-dep-tree/tree.png
 
 for (( i=0; i<${#entries[@]}; i++ ));
 do

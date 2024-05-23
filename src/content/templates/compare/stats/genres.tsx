@@ -135,7 +135,7 @@ export const GenreBreakdown = (props: { data: ComparisonData }) => {
 
   return (
     <>
-      <pre>{JSON.stringify(chart_data(), null, 2)}</pre>
+      {/* <pre>{JSON.stringify(chart_data(), null, 2)}</pre> */}
       <div>
         <Bar
           data={chart_data().data}
