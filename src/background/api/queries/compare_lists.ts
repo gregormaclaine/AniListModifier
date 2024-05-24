@@ -131,5 +131,3 @@ export async function compare_user_lists(username1: string, username2: string) {
     their_unique
   };
 }
-
-export type ComparisonData = Awaited<ReturnType<typeof compare_user_lists>>;

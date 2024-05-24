@@ -1,10 +1,7 @@
-import { createEffect, createResource, Show, Suspense } from 'solid-js';
-import {
-  compare_user_lists,
-  get_rate_limit_info
-} from '../../../background/api';
+import { createResource, Show, Suspense } from 'solid-js';
 import { GenreBreakdown } from './stats/genres';
 import { styled } from 'solid-styled-components';
+import { ComparisonData } from '../../../types';
 
 const GraphSection = styled('div')`
   margin: 0.5em;
@@ -13,11 +10,12 @@ const GraphSection = styled('div')`
 `;
 
 const Stats = () => {
-  const [data] = createResource(() =>
-    compare_user_lists('kappamac', 'simbaninja')
+  const [data] = createResource<ComparisonData>(() =>
+    chrome.runtime.sendMessage({
+      action: 'compare-lists',
+      value: { me: 'kappamac', them: 'simbaninja' }
+    })
   );
-
-  createEffect(() => data() && console.log(get_rate_limit_info()));
 
   return (
     <GraphSection>

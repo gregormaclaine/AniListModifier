@@ -29,3 +29,36 @@ export type FeedItem = {
   user: string;
   id: number;
 };
+
+type ComparisonDataAnime = {
+  id: number;
+  anime: {
+    format: MediaFormat;
+    genres: string[];
+    url: string;
+    score: number;
+    title: string;
+    image: {
+      small: string;
+      large: string;
+    };
+  };
+};
+
+type ComparisonDataUserRecord = {
+  status: MediaListStatus;
+  score: number;
+};
+
+export type ComparisonData = {
+  me_total: number;
+  them_total: number;
+  me_average: number;
+  them_average: number;
+  common_anime: (ComparisonDataAnime & {
+    me: ComparisonDataUserRecord;
+    them: ComparisonDataUserRecord;
+  })[];
+  my_unique: (ComparisonDataAnime & { me: ComparisonDataUserRecord })[];
+  their_unique: (ComparisonDataAnime & { them: ComparisonDataUserRecord })[];
+};

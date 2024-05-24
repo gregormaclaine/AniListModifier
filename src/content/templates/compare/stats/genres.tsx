@@ -9,7 +9,7 @@ import {
   Legend
 } from 'chart.js';
 import { Bar } from 'solid-chartjs';
-import { ComparisonData } from '../../../../background/api';
+import { ComparisonData } from '../../../../types';
 
 function calculate_genre_data(data: ComparisonData) {
   const all_shows = [

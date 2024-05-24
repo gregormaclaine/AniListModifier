@@ -1,4 +1,8 @@
-import { get_scores_for_media_set, get_rate_limit_info } from './api';
+import {
+  get_scores_for_media_set,
+  get_rate_limit_info,
+  compare_user_lists
+} from './api';
 import handle_settings_requests from './settings';
 import { is_object } from '../utils';
 import { type FeedItem } from '../types';
@@ -35,6 +39,11 @@ chrome.runtime.onMessage.addListener(
     switch (action) {
       case 'fetch-scores':
         gather_info(value).then(sendResponse);
+        return true;
+
+      case 'compare-lists':
+        if (!value.me || !value.them) return sendResponse(null);
+        compare_user_lists(value.me, value.them).then(sendResponse);
         return true;
 
       case 'get-settings':
