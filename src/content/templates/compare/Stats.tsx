@@ -20,9 +20,7 @@ const Stats = () => {
   return (
     <GraphSection>
       <Suspense fallback={<p>Loading...</p>}>
-        <Show when={data()}>
-          <GenreBreakdown data={data()} />
-        </Show>
+        <Show when={data()}>{data => <GenreBreakdown data={data()} />}</Show>
       </Suspense>
     </GraphSection>
   );

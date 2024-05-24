@@ -47,13 +47,13 @@ function calculate_genre_data(data: ComparisonData) {
         };
       }
 
-      if (show.me?.score) {
+      if ('me' in show && show.me.score) {
         genres[genre].me_avg_score *= genres[genre].me_count;
         genres[genre].me_avg_score += show.me.score;
         genres[genre].me_count++;
         genres[genre].me_avg_score /= genres[genre].me_count;
       }
-      if (show.them?.score) {
+      if ('them' in show && show.them.score) {
         genres[genre].them_avg_score *= genres[genre].them_count;
         genres[genre].them_avg_score += show.them.score;
         genres[genre].them_count++;
@@ -128,7 +128,21 @@ function get_genre_offset_chart(data: ComparisonData) {
 
   const chart_options = {
     responsive: true,
-    maintainAspectRatio: false
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        ticks: {
+          color: 'white',
+          tickColor: 'white'
+        }
+      },
+      y: {
+        ticks: {
+          color: 'white',
+          tickColor: 'white'
+        }
+      }
+    }
   };
 
   return { data: chart_data, options: chart_options };
