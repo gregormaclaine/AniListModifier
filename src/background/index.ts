@@ -2,6 +2,7 @@ import { get_scores_for_media_set, get_rate_limit_info } from './api';
 import handle_settings_requests from './settings';
 import { is_object } from '../utils';
 import { type FeedItem } from '../types';
+import { on_fetch_scores, on_update_settings } from './analytics';
 
 const gather_info = async (feed_items: FeedItem[]) => {
   feed_items = feed_items.filter(f => f);
@@ -34,11 +35,13 @@ chrome.runtime.onMessage.addListener(
 
     switch (action) {
       case 'fetch-scores':
+        on_fetch_scores();
         gather_info(value).then(sendResponse);
         return true;
 
-      case 'get-settings':
       case 'update-settings':
+        on_update_settings();
+      case 'get-settings':
         return handle_settings_requests({ action, value }, sendResponse);
       default:
         return;
