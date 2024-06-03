@@ -4,6 +4,10 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TransformJson = require('transform-json-webpack-plugin');
 const { DefinePlugin } = require('webpack');
 
+require('dotenv').config();
+
+if (!process.env.POSTHOG_API_KEY) throw Error('No Posthog api key given');
+
 const VERSION = require('./package.json').version;
 
 module.exports = {
@@ -85,7 +89,10 @@ module.exports = {
       source: 'public/manifest.json',
       object: { version: VERSION }
     }),
-    new DefinePlugin({ 'process.env.VERSION': `"v${VERSION}"` })
+    new DefinePlugin({
+      'process.env.VERSION': `"v${VERSION}"`,
+      'process.env.POSTHOG_API_KEY': `"${process.env.POSTHOG_API_KEY}"`
+    })
   ]
   // optimization: {
   //   minimize: false

@@ -6,7 +6,7 @@ async function capture_event(event: string) {
   if (is_new) await capture_event('track new user');
 
   const body = {
-    api_key: '<api-key>',
+    api_key: process.env.POSTHOG_API_KEY,
     event: event,
     properties: {
       distinct_id: id,
