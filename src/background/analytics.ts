@@ -10,7 +10,7 @@ async function capture_event(event: string) {
     event: event,
     properties: {
       distinct_id: id,
-      version: '{{version}}'
+      version: process.env.VERSION
     }
   };
 

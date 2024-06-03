@@ -2,6 +2,7 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TransformJson = require('transform-json-webpack-plugin');
+const { DefinePlugin } = require('webpack');
 
 const VERSION = require('./package.json').version;
 
@@ -83,7 +84,8 @@ module.exports = {
       filename: 'manifest.json',
       source: 'public/manifest.json',
       object: { version: VERSION }
-    })
+    }),
+    new DefinePlugin({ 'process.env.VERSION': `"v${VERSION}"` })
   ]
   // optimization: {
   //   minimize: false
