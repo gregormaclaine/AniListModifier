@@ -1,7 +1,9 @@
-import { get_scores_for_media_set, get_rate_limit_info } from './api';
 import handle_settings_requests from './settings';
 import { is_object } from '../utils';
 import { type FeedItem } from '../types';
+import { get_scores_for_media_set } from './api/queries/get_scores';
+import { get_rate_limit_info } from './api/api';
+import { get_activity_history } from './api/queries/get_history';
 
 const gather_info = async (feed_items: FeedItem[]) => {
   feed_items = feed_items.filter(f => f);
@@ -35,6 +37,12 @@ chrome.runtime.onMessage.addListener(
     switch (action) {
       case 'fetch-scores':
         gather_info(value).then(sendResponse);
+        return true;
+
+      case 'fetch-history':
+        get_activity_history(value.username, value.start, value.end).then(
+          sendResponse
+        );
         return true;
 
       case 'get-settings':

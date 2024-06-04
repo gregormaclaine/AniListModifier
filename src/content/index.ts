@@ -1,6 +1,7 @@
 import { get as get_settings, log } from './settings';
 import { main as update_feed, reset as reset_feed } from './scored_feed';
 import { main as color_list } from './colored_list';
+import { main as update_history } from './history_fixer';
 
 function scroll_to_top_if_feed_is_empty() {
   if (!get_settings().autoscroll) return;
@@ -32,10 +33,18 @@ function main() {
 
   color_list();
 
+  if (current_url.match(/anilist\.co\/user\/[^\/]+\/?$/))
+    update_history().then(() => log('Successfully replaced activity history'));
+
   observer = new MutationObserver(mutationsList => {
     if (current_url !== location.href) {
       scroll_to_top_if_feed_is_empty();
       current_url = location.href;
+
+      if (current_url.match(/anilist\.co\/user\/[^\/]+\/?$/))
+        update_history().then(() =>
+          log('Successfully rereplaced activity history')
+        );
     }
 
     if (
