@@ -1,7 +1,7 @@
 {
   "name": "anilistmodifier",
-  "version": "1.2.2",
-  "description": "Chrome extension for AniList that adds score information to activity feed",
+  "version": "1.3.0",
+  "description": "Chrome extension for AniList that improves your experience",
   "directories": {
     "doc": "docs"
   },
