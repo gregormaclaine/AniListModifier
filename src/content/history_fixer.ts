@@ -27,6 +27,37 @@ async function get_data(
   }
 }
 
+/**
+ * Gets the tooltip for history as it is the only tooltip that doesn't only have
+ * text in the body of the tooltip. There is also a small dot.
+ */
+function get_history_tooltip(): HTMLElement | null {
+  return (
+    [...document.querySelectorAll<HTMLElement>('#app div.tooltip')].filter(el =>
+      el.querySelector('.content > div')
+    )[0] || null
+  );
+}
+
+function set_tooltip_content(tooltip: HTMLElement, dot: History) {
+  const prev_content = tooltip.querySelector<HTMLElement>('div.content');
+  //   if (prev_content) prev_content.style.display = 'none';
+
+  let custom_content = tooltip.querySelector<HTMLElement>('div.animod-content');
+  if (!custom_content) {
+    custom_content = document.createElement('div');
+    custom_content.classList.add('animod-content');
+    tooltip.appendChild(custom_content);
+  }
+
+  custom_content.innerHTML = `
+    ${new Date(dot.day).toLocaleDateString()}<br />
+    ${dot.episodes} Episodes Watched<br />
+    From ${dot.unique_shows} Unique Anime<br />
+    ${dot.activity.length} Activities
+  `;
+}
+
 export async function main() {
   const history_el = document.querySelector('div.activity-history');
   if (!history_el) return;
@@ -50,4 +81,17 @@ export async function main() {
   }
 
   console.log(data);
+
+  const max_activity = Math.max(...data.map(a => a.episodes));
+
+  for (let i = 0; i < history_el.childElementCount; i++) {
+    const dot_el = history_el.children[i];
+
+    dot_el.classList.add('lv-1');
+    dot_el.addEventListener('mouseenter', e => {
+      e.preventDefault();
+      const tooltip = get_history_tooltip();
+      if (tooltip) set_tooltip_content(tooltip, data[i]);
+    });
+  }
 }

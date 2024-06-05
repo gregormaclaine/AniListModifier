@@ -118,7 +118,7 @@ export async function get_activity_history(
       a => a.createdAt >= day && a.createdAt < day + 86400000
     );
     activity_breakdown.push({
-      day: new Date(day),
+      day: new Date(day + 1),
       unique_shows: new Set(activity.map(a => a.media.id)).size,
       episodes: count_episodes(activity),
       activity

@@ -19,6 +19,10 @@ function scroll_to_top_if_feed_is_empty() {
   }
 }
 
+function is_user_profile() {
+  return location.href.match(/anilist\.co\/user\/[^\/]+\/?$/);
+}
+
 let observer: MutationObserver;
 
 function main() {
@@ -33,7 +37,7 @@ function main() {
 
   color_list();
 
-  if (current_url.match(/anilist\.co\/user\/[^\/]+\/?$/))
+  if (is_user_profile())
     update_history().then(() => log('Successfully replaced activity history'));
 
   observer = new MutationObserver(mutationsList => {
@@ -41,7 +45,7 @@ function main() {
       scroll_to_top_if_feed_is_empty();
       current_url = location.href;
 
-      if (current_url.match(/anilist\.co\/user\/[^\/]+\/?$/))
+      if (is_user_profile())
         update_history().then(() =>
           log('Successfully rereplaced activity history')
         );
