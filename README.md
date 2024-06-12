@@ -3,6 +3,7 @@
 This is a chrome extension to improve your experience using [AniList Homepage](https://anilist.co/home).
 
 **Features**:
+
 - ⭐ Adds scores to user activity when completing or dropping anime and manga
   - Works for all rating types whether they are scaled up to 10 or 100, or the 5 star or smiley face system
 - 🎨 Color codes ratings both in the activity feed and media lists
@@ -11,6 +12,19 @@ This is a chrome extension to improve your experience using [AniList Homepage](h
 - 💎 All features can be enabled or disabled independently via the settings page
 
 ![Example](docs/example.png)
+
+## Planned Features
+
+- Improved **activity history** color grid on the profile page
+
+  - Currently it is fairly unreliable and also only counts unique activities. Instead there will be a toggle to change it to count number of episodes watched.
+
+- Entire revamp of the **list comparison page**
+
+  - Instead of just an unsorted table, it has the potential to give a lot of insight into the similarities and differences between your and your friends' lists. The revamp would introduce a selection of graphs and charts to compare your lists as well as a more modern table to sort and filter common anime/manga.
+
+- Improved **analytics**
+  - More work can be done on the analytics collected by the extension to give a better indication to what features of the extension require the most work.
 
 ## Download
 
