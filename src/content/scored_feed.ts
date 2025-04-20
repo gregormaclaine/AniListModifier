@@ -21,6 +21,9 @@ async function background_api_call(feed_items: FeedItem[]): Promise<{
   api_calls_total: number;
   score_format: ScoreFormat;
 }> {
+  // Filter out additional properties from the feed items (Having objects with functions attached can cause errors)
+  feed_items = feed_items.map(f => ({ id: f.id, user: f.user }));
+
   try {
     return await chrome.runtime.sendMessage('', {
       action: 'fetch-scores',
