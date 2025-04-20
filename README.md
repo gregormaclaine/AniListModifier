@@ -1,6 +1,6 @@
 # AniList Modifier
 
-This is a chrome extension to improve your experience using [AniList Homepage](https://anilist.co/home).
+This is a chrome/firefox extension to improve your experience using [AniList Homepage](https://anilist.co/home).
 
 **Features**:
 
@@ -28,11 +28,15 @@ This is a chrome extension to improve your experience using [AniList Homepage](h
 
 ## Download
 
-The tool is currently available in the chrome extension store and you can install it [here](https://chrome.google.com/webstore/detail/anilist-modifier/knclmpfhlbdlndgplhbnpajhpjmklfpi).
+The tool is currently available in the chrome extension store and you can install it [here](https://chrome.google.com/webstore/detail/anilist-modifier/knclmpfhlbdlndgplhbnpajhpjmklfpi). It is also currently pending approval in the Firefox addons store; however, it may be ready by the time you see this.
 
 You may also compile the most recent version yourself if you prefer. To do this you will need to download or clone this repository, and then run:
 
 - `npm install` or `yarn install`
 - `npm build` or `yarn build`
+
+If instead you want to build this for Firefox, run the following command instead:
+
+- `npm run build-firefox` or `yarn run build-firefox`
 
 This will compile the typescript and move all necessary files to the `build/` folder. This folder can then be installed as an extension by enabling developer mode on the extensions tab. Click [here](https://webkul.com/blog/how-to-install-the-unpacked-extension-in-chrome/) for further instructions if needed.
