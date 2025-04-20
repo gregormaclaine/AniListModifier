@@ -3,7 +3,10 @@ const CopyPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const TransformJson = require('transform-json-webpack-plugin');
 
-const VERSION = require('./package.json').version;
+const {
+  version: VERSION,
+  author: { email: author_email }
+} = require('./package.json');
 
 module.exports = env => {
   const isFirefox = env.browser === 'firefox';
@@ -100,7 +103,14 @@ module.exports = env => {
         source: 'public/manifest.json',
         object: {
           version: VERSION,
-          ...(isFirefox ? { background: { scripts: ['background.js'] } } : {})
+          ...(isFirefox
+            ? {
+                background: { scripts: ['background.js'] },
+                browser_specific_settings: {
+                  gecko: { id: author_email }
+                }
+              }
+            : {})
         }
       })
     ]
