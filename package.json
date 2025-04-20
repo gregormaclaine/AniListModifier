@@ -1,12 +1,13 @@
 {
   "name": "anilistmodifier",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Chrome extension for AniList that improves your experience",
   "directories": {
     "doc": "docs"
   },
   "scripts": {
     "build": "webpack",
+    "build-firefox": "webpack --env browser='firefox'",
     "start": "webpack --watch",
     "dtree": "bash scripts/form-dtree.sh"
   },
@@ -14,7 +15,10 @@
     "type": "git",
     "url": "git+https://github.com/gregormaclaine/AnilistModifier.git"
   },
-  "author": "Gregor Maclaine",
+  "author": {
+    "name": "Gregor Maclaine",
+    "email": "thegregormaclaine@gmail.com"
+  },
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/gregormaclaine/AnilistModifier/issues"
