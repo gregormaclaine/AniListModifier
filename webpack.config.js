@@ -67,7 +67,12 @@ module.exports = env => {
       new CleanWebpackPlugin(),
       new CopyPlugin({
         patterns: [
-          { from: '.', to: '.', context: 'public' },
+          {
+            from: '.',
+            to: '.',
+            context: 'public',
+            filter: f => !f.match(/manifest-(chrome|firefox)\.json?$/)
+          },
           {
             from: './src/popup',
             to: './popup',
@@ -100,18 +105,8 @@ module.exports = env => {
       }),
       new TransformJson({
         filename: 'manifest.json',
-        source: 'public/manifest.json',
-        object: {
-          version: VERSION,
-          ...(isFirefox
-            ? {
-                background: { scripts: ['background.js'] },
-                browser_specific_settings: {
-                  gecko: { id: author_email }
-                }
-              }
-            : {})
-        }
+        source: `public/manifest-${isFirefox ? 'firefox' : 'chrome'}.json`,
+        object: { version: VERSION }
       })
     ]
     // optimization: {

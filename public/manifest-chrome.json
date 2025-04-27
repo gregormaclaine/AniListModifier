@@ -1,0 +1,28 @@
+{
+  "name": "AniList Modifier",
+  "description": "Add scores to AniList activity feed",
+  "version": "0.0.0",
+  "manifest_version": 3,
+  "content_scripts": [
+    {
+      "matches": ["https://anilist.co/*"],
+      "js": ["injection.js", "templates/settings/main.js"],
+      "css": [],
+      "run_at": "document_start"
+    }
+  ],
+  "icons": {
+    "48": "icons/48.png",
+    "128": "icons/128.png",
+    "256": "icons/256.png",
+    "512": "icons/512.png"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/index.html",
+    "default_icon": { "48": "icons/48.png" }
+  },
+  "permissions": ["storage"]
+}

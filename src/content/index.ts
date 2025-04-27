@@ -2,6 +2,8 @@ import { get as get_settings, log } from './settings';
 import { main as update_feed, reset as reset_feed } from './scored_feed';
 import { main as color_list } from './colored_list';
 
+log('Content script injected...');
+
 function scroll_to_top_if_feed_is_empty() {
   if (!get_settings().autoscroll) return;
 
@@ -32,6 +34,8 @@ function main() {
 
   color_list();
 
+  if (observer) observer.disconnect();
+
   observer = new MutationObserver(mutationsList => {
     if (current_url !== location.href) {
       scroll_to_top_if_feed_is_empty();
@@ -61,7 +65,16 @@ function main() {
   });
 }
 
-window.addEventListener('load', () => {
+document.addEventListener('DOMContentLoaded', () => {
   log('Loading extension...');
   main();
+});
+
+// Fix for issue on firefox where the extension doesn't load on page reload
+window.addEventListener('pageshow', event => {
+  // Check if it's from bfcache
+  if (event.persisted) {
+    log('Reloading extension...');
+    main();
+  }
 });
